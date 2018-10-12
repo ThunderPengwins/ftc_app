@@ -72,8 +72,10 @@ public class VuforiaCube extends LinearOpMode {
         float thirdAngle = 0;
         //
         while (opModeIsActive()){
-            if (((VuforiaTrackableDefaultListener)blockTrackable.getListener()).isVisible()) {
+            if (((VuforiaTrackableDefaultListener)blockTrackable.getListener()).isVisible()) { //this is the problem
                 telemetry.addData("Visible Target", blockTrackable.getName());
+                telemetry.update();
+                sleep(10000);
                 targetVisible = true;
 
                 // getUpdatedRobotLocation() will return null if no new information is available since
@@ -96,6 +98,10 @@ public class VuforiaCube extends LinearOpMode {
                     secondAngle = orientation.secondAngle;
                     thirdAngle = orientation.thirdAngle;
                 //
+                telemetry.addData("wahoo", "yup");
+                telemetry.update();
+                sleep(10000);
+
             }
             telemetry.addData("Cube?", lastLocation != null);
             telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
