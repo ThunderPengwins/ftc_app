@@ -49,4 +49,9 @@ public abstract class OmniMode extends LinearOpMode {
         right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
     //
+    public void toPosition(){
+        left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+    //
 }
