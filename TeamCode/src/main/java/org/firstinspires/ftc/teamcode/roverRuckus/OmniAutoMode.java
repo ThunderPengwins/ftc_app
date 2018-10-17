@@ -236,7 +236,6 @@ public abstract class OmniAutoMode extends OmniMode{
         //
         //</editor-fold>
         //
-        //
     }
 }
 
