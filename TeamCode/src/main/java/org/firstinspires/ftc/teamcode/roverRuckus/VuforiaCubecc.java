@@ -38,7 +38,7 @@ public class VuforiaCubecc extends LinearOpMode {
     VuforiaLocalizer vuforia;
     //
     private DataSet currentDataset;
-
+    //
     public void runOpMode(){
         //
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -52,7 +52,7 @@ public class VuforiaCubecc extends LinearOpMode {
         telemetry.addData("Part", "2a");
         telemetry.update();
         //
-        VuforiaTrackables bloackTrackies = this.vuforia.loadTrackablesFromAsset("Block_OT");//this is the troubled one
+        VuforiaTrackables bloackTrackies = this.vuforia.loadTrackablesFromAsset("RoverRuckus");//this is the troubled one
         TrackerManager trackerManager = TrackerManager.getInstance();
         ObjectTracker objectTracker = (ObjectTracker) trackerManager.getTracker(ObjectTracker.getClassType());
         currentDataset = objectTracker.createDataSet();
@@ -64,20 +64,22 @@ public class VuforiaCubecc extends LinearOpMode {
         }
         if (!objectTracker.activateDataSet(currentDataset)){
             telemetry.addData("couldn't activate dataset","");
-            sleep(10000);
             telemetry.update();
+            sleep(1000);
         }
         //
         telemetry.addData("Part", "2");
         telemetry.update();
         //
-
+        Trackable trackableResult2 = currentDataset.getTrackable(2);
+        String something33 = trackableResult2.getType().toString();
+        System.out.println(trackableResult2.getType().toString());
+        //
         VuforiaTrackable blockTrackable = bloackTrackies.get(0);
         //vuforia.loadTrackablesFromFile("ftc_app/TeamCode/src/main/assets/Block_OT.xml");
         //
         telemetry.addData("Part", "3");
         telemetry.update();
-        sleep(10000);
         //
         telemetry.addData(">", "Press Play to start tracking");
         telemetry.update();
@@ -92,7 +94,7 @@ public class VuforiaCubecc extends LinearOpMode {
         float secondAngle = 0;
         float thirdAngle = 0;
         //
-        Trackable trackableResult = currentDataset.getTrackable(0);
+        Trackable trackableResult = currentDataset.getTrackable(2);
         while (opModeIsActive()){
             if(trackableResult.isOfType(ObjectTargetResult.getClassType())){
                 telemetry.addData("I tripped something", "");
@@ -104,7 +106,7 @@ public class VuforiaCubecc extends LinearOpMode {
                 telemetry.update();
                 sleep(10000);
                 targetVisible = true;
-
+                //
                 // getUpdatedRobotLocation() will return null if no new information is available since
                 // the last time that call was made, or if the trackable is not currently visible.
                 OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)blockTrackable.getListener()).getUpdatedRobotLocation();
@@ -113,7 +115,7 @@ public class VuforiaCubecc extends LinearOpMode {
                 }
                 break;
             }
-
+            //
             if (targetVisible) {
                 //
                     VectorF translation = lastLocation.getTranslation();
@@ -128,7 +130,6 @@ public class VuforiaCubecc extends LinearOpMode {
                 telemetry.addData("wahoo", "yup");
                 telemetry.update();
                 sleep(10000);
-
             }
             telemetry.addData("Cube?", lastLocation != null);
             telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
