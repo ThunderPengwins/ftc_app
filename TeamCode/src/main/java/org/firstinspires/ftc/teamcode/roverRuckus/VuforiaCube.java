@@ -45,7 +45,7 @@ public class VuforiaCube extends LinearOpMode {
         telemetry.addData("Part", "2a");
 
         //
-        VuforiaTrackables bloackTrackies = this.vuforia.loadTrackablesFromAsset("Block");
+        VuforiaTrackables bloackTrackies = this.vuforia.loadTrackablesFromAsset("Block_OT");
         //
         telemetry.addData("Part", "2");
         telemetry.update();
