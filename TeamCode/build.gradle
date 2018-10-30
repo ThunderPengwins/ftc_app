@@ -7,31 +7,30 @@
 // the build definitions, you can place those customizations in this file, but
 // please think carefully as to whether such customizations are really necessary
 // before doing so.
-
-
 // Custom definitions may go here
-
 // Include common definitions from above.
 apply from: '../build.common.gradle'
-
 android {
     buildToolsVersion '27.0.3'
 
 
     def versionPropsFile = file('apkcounter.properties')
 
-    if(versionPropsFile.canRead()){
+    if (versionPropsFile.canRead()) {
         def Properties versionProps = new Properties()
 
         versionProps.load(new FileInputStream(versionPropsFile))
 
         def code = versionProps['VERSION_CODE'].toInteger() + 1
 
-        versionProps['VERSION_CODE']=code.toString()
+        versionProps['VERSION_CODE'] = code.toString()
         versionProps.store(versionPropsFile.newWriter(), null)
 
-    }
-    else{
+    } else {
         throw new FileNotFoundException("Could not read apk counter file!")
     }
+}
+dependencies {
+    implementation project(':openCVLibrary3')
+    implementation project(':DogeCV')
 }
