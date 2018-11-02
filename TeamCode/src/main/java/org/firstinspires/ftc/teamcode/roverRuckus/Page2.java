@@ -14,6 +14,9 @@ public class Page2 extends OmniAutoMode {
     //
     public void runOpMode(){
         //
+        left = hardwareMap.dcMotor.get("left");
+        right = hardwareMap.dcMotor.get("right");
+        //
         telemetry.addData("Status", "DogeCV 2018.0 - Gold Align Example");
         //
         // Set up detector
