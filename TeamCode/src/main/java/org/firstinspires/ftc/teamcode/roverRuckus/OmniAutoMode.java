@@ -58,7 +58,7 @@ public abstract class OmniAutoMode extends OmniMode{
     //<editor-fold desc="Yay">
     abstract public void runOpMode();
     //
-    static final double countify = 53.45;
+    static final double countify = 41.5;
     //</editor-fold>
     //
     //<editor-fold desc="Extraneous">
@@ -83,8 +83,8 @@ public abstract class OmniAutoMode extends OmniMode{
     //</editor-fold>
     //
     //<editor-fold desc="Moving">
-    public void toPosition(double inches, double speed){
-        configureMotors();
+    public void moveToPosition(double inches, double speed){
+        toPosition();
         //
         int move = (int)(Math.round(inches*countify));
         //
@@ -148,12 +148,15 @@ public abstract class OmniAutoMode extends OmniMode{
         //
         withEncoder();
         //
+        telemetry.addData("stuff", speedDirection);
+        telemetry.update();
         turn(speedDirection);
         //
         double input2 = (2 * Math.ceil((speedDirection + Math.abs(speedDirection)) / 2) - 1);
         telemetry.addLine("Output 1: " + input2);
+        //
         double target = ( -1 * (((Math.floor(Math.abs((degrees * input2) + yaw) / 180)) * input2 * 360) - ((degrees * input2) + yaw)));
-        while (!((target - 1 - (2 * input2)) <= -angles.firstAngle && -angles.firstAngle < (target + 1 - (2 * input2)))){
+        while (!((target - 1 - (2 * input2)) <= -angles.firstAngle && -angles.firstAngle < (target + 1 - (2 * input2))) && opModeIsActive()){
             telemetry.addData("Position", angles.firstAngle);
             angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             gravity  = imu.getGravity();
@@ -274,6 +277,7 @@ public abstract class OmniAutoMode extends OmniMode{
             telemetry.update();
         }
     }
+    //
 }
 
 

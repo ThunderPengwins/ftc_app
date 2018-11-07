@@ -54,4 +54,20 @@ public abstract class OmniMode extends LinearOpMode {
         right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
     //
+    public void telInit(String message){
+        telemetry.addData("Initializing", message);
+        telemetry.update();
+    }
+    public void telMove(String message){
+        telemetry.addData("Move", message);
+        telemetry.update();
+    }
+    //
+    public void countdown (Integer seconds){
+        for (int i = 0; i < seconds; i++){
+            telemetry.addData("T-minus", seconds - i);
+            telemetry.update();
+            sleep(1000);
+        }
+    }
 }

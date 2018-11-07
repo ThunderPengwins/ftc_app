@@ -22,6 +22,7 @@ public class LiftyTest extends OmniMode{
         latch = hardwareMap.servo.get("latch");
         //
         vertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        vertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //</editor-fold>
         //
         waitForStartify();
@@ -33,6 +34,8 @@ public class LiftyTest extends OmniMode{
         Boolean auto = false;
         Integer direction = 1;
         Boolean powerP = false;
+        Double position = 0.0;
+        Boolean powerO = false;
         //</editor-fold>
         //
         while (opModeIsActive()){
@@ -41,7 +44,7 @@ public class LiftyTest extends OmniMode{
             rightC = -gamepad2.right_stick_x;//right x
             //
             //<editor-fold desc="Set auto move">
-            if (gamepad2.y){
+            /*if (gamepad2.y){
                 direction = 1;
                 if (!auto){
                     auto = true;
@@ -51,7 +54,7 @@ public class LiftyTest extends OmniMode{
                 if (!auto){
                     auto = true;
                 }
-            }
+            }*/
             //</editor-fold>
             //
             //<editor-fold desc="Change power">
@@ -67,19 +70,35 @@ public class LiftyTest extends OmniMode{
             //</editor-fold>
             //
             //<editor-fold desc="set moter power">
-            if (((!up.isPressed() && leftC > 0) || (!down.isPressed() && leftC < 0)) && !auto){
+            //if (((!up.isPressed() && leftC > 0) || (!down.isPressed() && leftC < 0)) && !auto){
                 vertical.setPower(leftC);
-            } else if (auto){
+            /*} else if (auto){
                 if (!(up.isPressed() && down.isPressed())){
                     vertical.setPower(power * direction);
                 } else{
                     vertical.setPower(0);
                     auto = false;
                 }
+                }
+            */
+            if (gamepad2.x && !powerO){
+                powerO = true;
+                position += .1;
+            } else if (gamepad2.y && !powerO){
+                powerO = true;
+                position -= .1;
+            } else if (!(gamepad2.y && gamepad2.b) && powerO){
+                powerO = false;
             }
+            //
+            latch.setPosition(position);
             //</editor-fold>
             //
-            telemetry.addData("power", power);
+            telemetry.addData("power", leftC);
+            telemetry.addData("game", -gamepad2.left_stick_y);
+            telemetry.addData("position", position);
+            telemetry.addData("go?", powerO);
+            telemetry.update();
         }
     }
     //

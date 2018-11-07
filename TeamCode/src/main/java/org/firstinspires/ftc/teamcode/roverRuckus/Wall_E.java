@@ -7,8 +7,26 @@ public class Wall_E extends OmniAutoMode{
     //
     public void runOpMode(){
         //
+        telInit("hardware");
+        left = hardwareMap.dcMotor.get("left");
+        right = hardwareMap.dcMotor.get("right");
         //
+        configureMotors();
         //
+        toPosition();
+        //
+        telInit("gyro");
+        initGyro();
+        //
+        telInit("complete");
+        //
+        waitForStartify();
+        //
+        telMove("in progress");
+        turnWithGyro(170, .1);
+        turnWithGyro(10, .05);
+        //
+        telMove("complete");
     }
     //
 }
