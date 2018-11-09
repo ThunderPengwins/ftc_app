@@ -134,14 +134,9 @@ public abstract class OmniAutoMode extends OmniMode{
     }
     //
     public void turnWithGyro(double degrees, double speedDirection){
-        telemetry.addData("Working", "");
-        telemetry.update();
-        //
-        //<editor-fold desc="Everything Else">
-        telemetry.addData("Still working", "");
-        telemetry.update();
+        //<editor-fold desc="Initialize">
         angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double yaw = -angles.firstAngle;
+        double yaw = angles.firstAngle;//make this negative
         telemetry.addData("Speed Direction", speedDirection);
         telemetry.addData("Yaw", yaw);
         telemetry.update();
@@ -150,29 +145,62 @@ public abstract class OmniAutoMode extends OmniMode{
         //
         telemetry.addData("stuff", speedDirection);
         telemetry.update();
-        turn(speedDirection);
         //
-        double input2 = (2 * Math.ceil((speedDirection + Math.abs(speedDirection)) / 2) - 1);
-        telemetry.addLine("Output 1: " + input2);
+        double first;
+        double second;
+        //</editor-fold>
         //
-        double target = ( -1 * (((Math.floor(Math.abs((degrees * input2) + yaw) / 180)) * input2 * 360) - ((degrees * input2) + yaw)));
-        while (!((target - 1 - (2 * input2)) <= -angles.firstAngle && -angles.firstAngle < (target + 1 - (2 * input2))) && opModeIsActive()){
-            telemetry.addData("Position", angles.firstAngle);
+        if (speedDirection > 0){//set target positions
+            //<editor-fold desc="turn right">
+            if (degrees > 10){
+                first = (degrees - 10) + devertify(yaw);
+                second = degrees + devertify(yaw);
+            }else{
+                first = devertify(yaw);
+                second = degrees + devertify(yaw);
+            }
+            //</editor-fold>
+        }else{
+            //<editor-fold desc="turn left">
+            if (degrees > 10){
+                first = -(degrees - 10) + devertify(yaw);
+                second = -degrees + devertify(yaw);
+            }else{
+                first = devertify(yaw);
+                second = -degrees + devertify(yaw);
+            }
+            //
+            //</editor-fold>
+        }
+        //
+        //<editor-fold desc="Go to position">
+        turn(speedDirection);//start to first position
+        while (!(convertify(first - 5) < yaw && yaw < convertify(first + 5)) && opModeIsActive()){//within range?
             angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             gravity  = imu.getGravity();
-            telemetry.addData("NumberTargetThing", target);
-            telemetry.addData("Yaw", yaw);
-            //
+            yaw = angles.firstAngle;
+            telemetry.addData("Position", yaw);
+            telemetry.addData("first before", first);
+            telemetry.addData("first after", convertify(first));
             telemetry.update();
         }
-        turn(0);
+        //
+        turn(speedDirection/2);//turn to second position
+        while (!(convertify(second - 2) < yaw && yaw < convertify(second + 2)) && opModeIsActive()){//within range?
+            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            gravity  = imu.getGravity();
+            yaw = angles.firstAngle;
+            telemetry.addData("Position", yaw);
+            telemetry.addData("second before", second);
+            telemetry.addData("second after", convertify(second));
+            telemetry.update();
+        }
+        turn(0);//stop
+        //</editor-fold>
         //
         stopAndResetify();
         //
-        //</editor-fold>
     }
-    //</editor-fold>
-    //
     /*
     Insert Vuforia cube stuff here
      */
@@ -278,6 +306,23 @@ public abstract class OmniAutoMode extends OmniMode{
         }
     }
     //
+    public double convertify(double degrees){
+        if (degrees > 179){
+            degrees = -(360 - degrees);
+        } else if(degrees < -180){
+            degrees = 360 + degrees;
+        } else if(degrees > 360){
+            degrees = degrees - 360;
+        }
+        return degrees;
+    }
+    //
+    public double devertify(double degrees){
+        if (degrees < 0){
+            degrees = degrees + 360;
+        }
+        return degrees;
+    }
 }
 
 
