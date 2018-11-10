@@ -136,7 +136,7 @@ public abstract class OmniAutoMode extends OmniMode{
     public void turnWithGyro(double degrees, double speedDirection){
         //<editor-fold desc="Initialize">
         angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double yaw = angles.firstAngle;//make this negative
+        double yaw = -angles.firstAngle;//make this negative
         telemetry.addData("Speed Direction", speedDirection);
         telemetry.addData("Yaw", yaw);
         telemetry.update();
@@ -163,37 +163,70 @@ public abstract class OmniAutoMode extends OmniMode{
         }else{
             //<editor-fold desc="turn left">
             if (degrees > 10){
-                first = -(degrees - 10) + devertify(yaw);
-                second = -degrees + devertify(yaw);
+                first = devertify(-(degrees - 10) + devertify(yaw));
+                second = devertify(-degrees + devertify(yaw));
             }else{
                 first = devertify(yaw);
-                second = -degrees + devertify(yaw);
+                second = devertify(-degrees + devertify(yaw));
             }
             //
             //</editor-fold>
         }
         //
         //<editor-fold desc="Go to position">
+        Double firsta = convertify(first - 5);//175
+        Double firstb = convertify(first + 5);//-175
+        //
         turn(speedDirection);//start to first position
-        while (!(convertify(first - 5) < yaw && yaw < convertify(first + 5)) && opModeIsActive()){//within range?
-            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            gravity  = imu.getGravity();
-            yaw = angles.firstAngle;
-            telemetry.addData("Position", yaw);
-            telemetry.addData("first before", first);
-            telemetry.addData("first after", convertify(first));
-            telemetry.update();
+        //
+        if (Math.abs(firsta - firstb) < 11) {
+            while (!(firsta < yaw && yaw < firstb) && opModeIsActive()) {//within range?
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                gravity = imu.getGravity();
+                yaw = -angles.firstAngle;
+                telemetry.addData("Position", yaw);
+                telemetry.addData("first before", first);
+                telemetry.addData("first after", convertify(first));
+                telemetry.update();
+            }
+        }else{
+            //
+            while (!((firsta < yaw && yaw < 180) || (-180 < yaw && yaw < firstb)) && opModeIsActive()) {//within range?
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                gravity = imu.getGravity();
+                yaw = -angles.firstAngle;
+                telemetry.addData("Position", yaw);
+                telemetry.addData("first before", first);
+                telemetry.addData("first after", convertify(first));
+                telemetry.update();
+            }
         }
         //
-        turn(speedDirection/2);//turn to second position
-        while (!(convertify(second - 2) < yaw && yaw < convertify(second + 2)) && opModeIsActive()){//within range?
-            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            gravity  = imu.getGravity();
-            yaw = angles.firstAngle;
-            telemetry.addData("Position", yaw);
-            telemetry.addData("second before", second);
-            telemetry.addData("second after", convertify(second));
-            telemetry.update();
+        Double seconda = convertify(second - 5);//175
+        Double secondb = convertify(second + 5);//-175
+        //
+        turn(speedDirection/3);//turn to second position
+        //
+        if (Math.abs(seconda - secondb) < 11) {
+            while (!(seconda < yaw && yaw < secondb) && opModeIsActive()) {//within range?
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                gravity = imu.getGravity();
+                yaw = -angles.firstAngle;
+                telemetry.addData("Position", yaw);
+                telemetry.addData("second before", second);
+                telemetry.addData("second after", convertify(second));
+                telemetry.update();
+            }
+        }else{
+            while (!((seconda < yaw && yaw < 180) || (-180 < yaw && yaw < secondb)) && opModeIsActive()) {//within range?
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                gravity = imu.getGravity();
+                yaw = -angles.firstAngle;
+                telemetry.addData("Position", yaw);
+                telemetry.addData("second before", second);
+                telemetry.addData("second after", convertify(second));
+                telemetry.update();
+            }
         }
         turn(0);//stop
         //</editor-fold>

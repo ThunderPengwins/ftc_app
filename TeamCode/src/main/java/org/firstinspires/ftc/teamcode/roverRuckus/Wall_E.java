@@ -23,7 +23,9 @@ public class Wall_E extends OmniAutoMode{
         waitForStartify();
         //
         telMove("in progress");
-        turnWithGyro(90, .1);
+        turnWithGyro(180, -.1);
+        sleep(1000);
+        turnWithGyro(270, .1);
         //
         telMove("complete");
     }
