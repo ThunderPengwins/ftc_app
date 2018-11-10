@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.roverRuckus;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -54,6 +57,8 @@ public abstract class OmniAutoMode extends OmniMode{
     BNO055IMU imu;
     Orientation angles;
     Acceleration gravity;
+    DistanceSensor sideSensorDistance;
+    ModernRoboticsI2cRangeSensor frontRangesensor;
     //
     //<editor-fold desc="Yay">
     abstract public void runOpMode();
