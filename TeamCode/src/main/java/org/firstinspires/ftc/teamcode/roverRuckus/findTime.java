@@ -5,20 +5,20 @@ import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-//an ominous autonomous
-
-@Autonomous(name = "Page 2?", group = "test")
-public class Page2 extends OmniAutoMode {
+@Autonomous(name = "find Time", group = "real")
+public class findTime extends OmniAutoMode {
     //
     private GoldAlignDetector detector;
     //
     public void runOpMode(){
         //
+        //<editor-fold desc="Initialize">
+        //
+        telInit("hardware");
         left = hardwareMap.dcMotor.get("left");
         right = hardwareMap.dcMotor.get("right");
         //
-        telemetry.addData("Status", "DogeCV 2018.0 - Gold Align Example");
-        //
+        telInit("DogeCV");
         // Set up detector
         detector = new GoldAlignDetector(); // Create detector
         detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance()); // Initialize it with the app context and camera
@@ -36,16 +36,32 @@ public class Page2 extends OmniAutoMode {
         detector.ratioScorer.perfectRatio = 1.0; // Ratio adjustment
         //
         detector.enable(); // Start the detector!
+        //</editor-fold>
+        //
+        telInit("IMU Gyro");
+        initGyro();
+        //
+        configureMotors();
+        telInit("complete");
         //
         waitForStartify();
         //
-        turn(.1);
+        time.reset();
         //
-        while (opModeIsActive() && !detector.getAligned()){
-            telemetry.addData("IsAligned" , detector.getAligned()); // Is the bot aligned with the gold mineral?
-            telemetry.addData("X Pos" , detector.isFound()); // Gold X position.
+        withoutEncoder();
+        turn(.2);
+        while (!detector.getAligned()) {
+            telemetry.addData("time", time.milliseconds());
+            telemetry.addData("move", "turning");
+            telemetry.update();
         }
         turn(0);
+        //
+        telemetry.addData("time", time.milliseconds());
+        telemetry.addData("move", "complete");
+        telemetry.update();
+        //
+        while (opModeIsActive());
     }
     //
 }

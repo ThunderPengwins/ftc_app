@@ -6,14 +6,15 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 @TeleOp(name = "LiftyTest", group = "test")
-public class LiftyTest extends OmniMode{
+public class LiftyTest extends OmniMode {
     //
     DcMotor vertical;
     TouchSensor down;
     TouchSensor up;
     Servo latch;
+
     //
-    public void runOpMode(){
+    public void runOpMode() {
         //
         //<editor-fold desc="HardwareMap">
         vertical = hardwareMap.dcMotor.get("verticle");
@@ -38,56 +39,56 @@ public class LiftyTest extends OmniMode{
         Boolean powerO = false;
         //</editor-fold>
         //
-        while (opModeIsActive()){
+        while (opModeIsActive()) {
             //
             leftC = -gamepad2.left_stick_y;//left y
             rightC = -gamepad2.right_stick_x;//right x
             //
             //<editor-fold desc="Set auto move">
-            /*if (gamepad2.y){
+            if (gamepad2.y) {
                 direction = 1;
-                if (!auto){
+                if (!auto) {
                     auto = true;
                 }
-            } else if (gamepad2.x){
+            } else if (gamepad2.x) {
                 direction = -1;
-                if (!auto){
+                if (!auto) {
                     auto = true;
                 }
-            }*/
+            }
             //</editor-fold>
             //
             //<editor-fold desc="Change power">
-            if (gamepad2.b && !powerP){
+            if (gamepad2.b && !powerP) {
                 power += .1;
                 powerP = true;
-            } else if (gamepad2.a && !powerP){
+            } else if (gamepad2.a && !powerP) {
                 power -= .1;
                 powerP = true;
-            } else if (!(gamepad2.a && gamepad2.b) && powerP){
+            } else if (!(gamepad2.a && gamepad2.b) && powerP) {
                 powerP = false;
             }
             //</editor-fold>
             //
             //<editor-fold desc="set moter power">
-            //if (((!up.isPressed() && leftC > 0) || (!down.isPressed() && leftC < 0)) && !auto){
+            if (((!up.isPressed() && leftC > 0) || (!down.isPressed() && leftC < 0)) && !auto) {
                 vertical.setPower(leftC);
-            /*} else if (auto){
-                if (!(up.isPressed() && down.isPressed())){
+            } else if (auto) {
+                if (!(up.isPressed() && down.isPressed())) {
                     vertical.setPower(power * direction);
-                } else{
+                } else {
                     vertical.setPower(0);
                     auto = false;
                 }
-                }
-            */
-            if (gamepad2.x && !powerO){
+            }
+
+            if (gamepad2.x && !powerO) {
                 powerO = true;
                 position += .1;
-            } else if (gamepad2.y && !powerO){
+            } else if (gamepad2.y && !powerO) {
                 powerO = true;
                 position -= .1;
-            } else if (!(gamepad2.y && gamepad2.b) && powerO){
+            } else if (!(gamepad2.y && gamepad2.b) && powerO) {
                 powerO = false;
             }
             //
@@ -97,6 +98,8 @@ public class LiftyTest extends OmniMode{
             telemetry.addData("power", leftC);
             telemetry.addData("game", -gamepad2.left_stick_y);
             telemetry.addData("position", position);
+            telemetry.addData("up", up);
+            telemetry.addData("down", down);
             telemetry.addData("go?", powerO);
             telemetry.update();
         }

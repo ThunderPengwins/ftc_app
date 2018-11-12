@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.roverRuckus;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -32,8 +33,9 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 
 public abstract class OmniAutoMode extends OmniMode{
     //
-    //PengwinFin pengwinFin;
     double rotationInches;
+    //
+    ElapsedTime time = new ElapsedTime();
     //
     //<editor-fold desc="Init Vuforia">
     private static final String VUFORIA_KEY = "AbxR5+T/////AAAAGR1YlvU/6EDzrJvG5EfPnXSFutoBr1aCusr0K3pKqPuWTBQsUb0mv5irjoX2Xf/GFvAvHyw8v1GBYgHwE+hNTcNj05kw3juX+Ur4l3HNnp5SfXV/8fave0xB7yVYZ/LBDraNnYXiuT+D/5iGfQ99PVVao3LI4uGUOvL9+3vbPqtTXLowqFJX5uE7R/W4iLmNqHgTCSzWcm/J1CzwWuOPD252FDE9lutdDVRri17DBX0C/D4mt6BdI5CpxhG6ZR0tm6Zh2uvljnCK6N42V5x/kXd+UrBgyP43CBAACQqgP6MEvQylUD58U4PeTUWe9Q4o6Xrx9QEwlr8v+pmi9nevKnmE2CrPPwQePkDUqradHHnU";
@@ -126,11 +128,7 @@ public abstract class OmniAutoMode extends OmniMode{
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         //
         imu = hardwareMap.get(BNO055IMU.class, "imu");
-        telemetry.addData("init imu","");
-        telemetry.update();
         imu.initialize(parameters);
-        telemetry.addData("imu initiated", "");
-        telemetry.update();
     }
     //
     public void turnWithGyro(double degrees, double speedDirection){
@@ -355,6 +353,15 @@ public abstract class OmniAutoMode extends OmniMode{
             degrees = degrees + 360;
         }
         return degrees;
+    }
+    //
+    public void waitify(Integer milliseconds){
+        time.reset();
+        //
+        while (time.milliseconds() < milliseconds && opModeIsActive()){
+            telemetry.addData("Waiting", milliseconds - time.milliseconds());
+            telemetry.update();
+        }
     }
 }
 
