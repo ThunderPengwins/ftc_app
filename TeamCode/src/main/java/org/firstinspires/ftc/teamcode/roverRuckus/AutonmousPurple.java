@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+import static java.lang.Double.NaN;
+
 @Autonomous(name = "The Angry One", group = "Auto")
 
 public class AutonmousPurple extends OmniAutoMode{
@@ -21,8 +23,8 @@ public class AutonmousPurple extends OmniAutoMode{
         initGyro();
         configureMotors();
         toPosition();
-
-
+        //
+        waitForStartify();
 ////Unlatch
 //        waitForStartify();
 //        moveToPosition(5, 0.50);
@@ -40,17 +42,24 @@ public class AutonmousPurple extends OmniAutoMode{
 ////Drive To Depo
 //        moveToPosition(5, 0.5);
 //Go To The Crater
-        turnWithGyro(45,0.50);
-        telemetry.addData("Side Range", "%.2f cm", sideSensorDistance.getDistance(DistanceUnit.CM));
-        telemetry.addData("Front Range", "%.2f cm", frontRangesensor.getDistance(DistanceUnit.CM));
-        telemetry.update();
-        while (frontRangesensor.getDistance(DistanceUnit.CM)<10){
-        if (sideSensorDistance.getDistance(DistanceUnit.CM)<5){
-            turnWithGyro(10, 0.5);
+        //turnWithGyro(45,0.10);
+        while (frontRangesensor.getDistance(DistanceUnit.CM)>10){
+        if (sideSensorDistance.getDistance(DistanceUnit.CM)>4){
+            turnWithGyro(20, 0.1);
+        }
+        if(sideSensorDistance.getDistance(DistanceUnit.CM)<2){
+            turnWithGyro(20, -0.1);
+        }
+        if(sideSensorDistance.getDistance(DistanceUnit.CM) == DistanceUnit.infinity){
+            turnWithGyro(10, 0.1);
         }
         else{
-            moveToPosition(5, 0.5);
-        }}
+            moveToPosition(0.5, 0.1);
+        }
+            telemetry.addData("Side Range", "%.2f cm", sideSensorDistance.getDistance(DistanceUnit.CM));
+            telemetry.addData("Front Range", "%.2f cm", frontRangesensor.getDistance(DistanceUnit.CM));
+            telemetry.update();
+        }
 
 //        turnWithGyro(45,0.50);
 //        moveToPosition(5, 0.50);

@@ -192,7 +192,7 @@ public abstract class OmniAutoMode extends OmniMode{
                 telemetry.addData("Position", yaw);
                 telemetry.addData("first before", first);
                 telemetry.addData("first after", convertify(first));
-                telemetry.update();
+//                telemetry.update();
             }
         }else{
             //
@@ -203,7 +203,7 @@ public abstract class OmniAutoMode extends OmniMode{
                 telemetry.addData("Position", yaw);
                 telemetry.addData("first before", first);
                 telemetry.addData("first after", convertify(first));
-                telemetry.update();
+//                telemetry.update();
             }
         }
         //
@@ -220,7 +220,7 @@ public abstract class OmniAutoMode extends OmniMode{
                 telemetry.addData("Position", yaw);
                 telemetry.addData("second before", second);
                 telemetry.addData("second after", convertify(second));
-                telemetry.update();
+//                telemetry.update();
             }
         }else{
             while (!((seconda < yaw && yaw < 180) || (-180 < yaw && yaw < secondb)) && opModeIsActive()) {//within range?
@@ -230,7 +230,7 @@ public abstract class OmniAutoMode extends OmniMode{
                 telemetry.addData("Position", yaw);
                 telemetry.addData("second before", second);
                 telemetry.addData("second after", convertify(second));
-                telemetry.update();
+//                telemetry.update();
             }
         }
         turn(0);//stop
@@ -340,7 +340,7 @@ public abstract class OmniAutoMode extends OmniMode{
             else {
                 telemetry.addData("Visible Target", "none");
             }
-            telemetry.update();
+//            telemetry.update();
         }
     }
     //
