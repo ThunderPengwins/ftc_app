@@ -26,7 +26,7 @@ import java.util.List;
  * Created by Victo on 9/10/2018.
  */
 
-public abstract class SamplingOrderDetector extends DogeCVDetector {
+public class SamplingOrderDetector extends DogeCVDetector {
     // Enum to describe gold location
     public enum GoldLocation {
         UNKNOWN,
