@@ -13,6 +13,7 @@ public abstract class OmniMode extends LinearOpMode {
     DcMotor left;
     DcMotor right;
 
+
     //
     public void configureMotors(){
         right.setDirection(DcMotorSimple.Direction.REVERSE);
