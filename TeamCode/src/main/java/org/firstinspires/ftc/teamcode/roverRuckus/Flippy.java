@@ -31,3 +31,4 @@ public class Flippy extends OmniAutoMode{
             waitify(1000);
         }
 }}
+//Nora is cool
