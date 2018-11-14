@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.roverRuckus;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -237,9 +236,6 @@ public abstract class OmniAutoMode extends OmniMode{
         stopAndResetify();
         //
     }
-    /*
-    Insert Vuforia cube stuff here
-     */
     //
     public void initVuforia(){
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());

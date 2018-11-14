@@ -3,12 +3,19 @@ package org.firstinspires.ftc.teamcode.roverRuckus;
 import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @Autonomous (name = "Wall-E", group = "real")
 public class Wall_E extends OmniAutoMode{
     //
     private GoldAlignDetector detector;
+    ModernRoboticsI2cRangeSensor jeep;
     //
     public void runOpMode(){
         //
@@ -19,10 +26,11 @@ public class Wall_E extends OmniAutoMode{
         telInit("hardware");
         left = hardwareMap.dcMotor.get("left");
         right = hardwareMap.dcMotor.get("right");
+        jeep = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "jeep");
         //
         configureMotors();
         //
-        toPosition();
+        withoutEncoder();
         //
         telInit("DogeCV");
         //
@@ -45,6 +53,7 @@ public class Wall_E extends OmniAutoMode{
         //
         telInit("gyro");
         initGyro();
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         //
         telInit("complete");
         //
@@ -54,16 +63,16 @@ public class Wall_E extends OmniAutoMode{
         //
         turn(.2);
         time.reset();
-        //
+        //Turn towards mineral
         telMove("Looking for mineral");
         while (!detector.getAligned()){}
         turn(0);
         Double stoptime = time.milliseconds();
         Integer position;
-        //
-        if (first - 300 < stoptime && stoptime < first + 300){
+        //Check position of mineral
+        if (-angles.firstAngle < 80){
             position = 0;
-        }else if(second - 300 < stoptime && stoptime < second + 300){
+        }else if(80 <= -angles.firstAngle && -angles.firstAngle < 100){
             position = 1;
         }else{
             position = 2;
@@ -79,6 +88,36 @@ public class Wall_E extends OmniAutoMode{
         drive(0);
         //
         telMove("complete");
+        //turn if needed
+        if (position == 0){
+            telMove("turn right");
+            turnWithGyro(30, .1);
+            toPosition();
+            telMove("more stuff!");
+            moveToPosition(2, .1);
+        } else if(position == 2){
+            telMove("turn left");
+            turnWithGyro(30, -.1);
+            toPosition();
+            telMove("more stuff!");
+            moveToPosition(2, .1);
+        }
+        //move to depot
+        moveToPosition(10, .1);
+        //back away from the cube
+        moveToPosition(-2, .1);
+        //turn towards wall
+        turnWithGyro(45, .1);
+        //
+        /*
+        insert deposite marker
+         */
+        //drive to wall
+        drive(.1);
+        while (jeep.getDistance(DistanceUnit.INCH) > 5){}
+        drive(0);
+        //
+
     }
     //
 }

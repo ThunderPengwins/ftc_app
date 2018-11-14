@@ -2,25 +2,28 @@ package org.firstinspires.ftc.teamcode.roverRuckus;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 
 @TeleOp(name = "LiftyTest", group = "test")
 public class LiftyTest extends OmniMode {
     //
     DcMotor vertical;
-    TouchSensor down;
-    TouchSensor up;
+    DigitalChannel down;
+    DigitalChannel up;
     Servo latch;
 
     //
     public void runOpMode() {
         //
         //<editor-fold desc="HardwareMap">
-        vertical = hardwareMap.dcMotor.get("verticle");
-        down = hardwareMap.touchSensor.get("down");
-        up = hardwareMap.touchSensor.get("up");
+        vertical = hardwareMap.dcMotor.get("vertical");//change in phones
+        down = hardwareMap.get(DigitalChannel.class, "down");
+        up = hardwareMap.get(DigitalChannel.class, "up");
         latch = hardwareMap.servo.get("latch");
+        //
+        down.setMode(DigitalChannel.Mode.INPUT);
+        up.setMode(DigitalChannel.Mode.INPUT);
         //
         vertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         vertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -71,10 +74,10 @@ public class LiftyTest extends OmniMode {
             //</editor-fold>
             //
             //<editor-fold desc="set moter power">
-            if (((!up.isPressed() && leftC > 0) || (!down.isPressed() && leftC < 0)) && !auto) {
+            if (((!up.getState() && leftC > 0) || (!down.getState() && leftC < 0)) && !auto) {
                 vertical.setPower(leftC);
             } else if (auto) {
-                if (!(up.isPressed() && down.isPressed())) {
+                if (!((up.getState() && gamepad2.y) || (down.getState() && gamepad2.x))) {
                     vertical.setPower(power * direction);
                 } else {
                     vertical.setPower(0);
@@ -98,9 +101,10 @@ public class LiftyTest extends OmniMode {
             telemetry.addData("power", leftC);
             telemetry.addData("game", -gamepad2.left_stick_y);
             telemetry.addData("position", position);
-            telemetry.addData("up", up);
-            telemetry.addData("down", down);
+            telemetry.addData("up", up.getState());
+            telemetry.addData("down", down.getState());
             telemetry.addData("go?", powerO);
+            telemetry.addData("auto?", auto);
             telemetry.update();
         }
     }
