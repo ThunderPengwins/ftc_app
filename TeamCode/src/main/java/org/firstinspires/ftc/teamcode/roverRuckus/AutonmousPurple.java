@@ -18,7 +18,7 @@ public class AutonmousPurple extends OmniAutoMode{
         telInit("hardware");
         left = hardwareMap.dcMotor.get("left");
         right = hardwareMap.dcMotor.get("right");
-        sideSensorDistance = hardwareMap.get(DistanceSensor.class, "sensor_color_distance");
+        sideSensorDistance = hardwareMap.get(DistanceSensor.class, "wall");
         frontRangesensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "jeep");
         initGyro();
         configureMotors();
@@ -43,26 +43,46 @@ public class AutonmousPurple extends OmniAutoMode{
 //        moveToPosition(5, 0.5);
 //Go To The Crater
         //turnWithGyro(45,0.10);
-        while (frontRangesensor.getDistance(DistanceUnit.CM)>10){
-        if (sideSensorDistance.getDistance(DistanceUnit.CM)>4){
-            turnWithGyro(20, 0.1);
-        }
-        if(sideSensorDistance.getDistance(DistanceUnit.CM)<2){
-            turnWithGyro(20, -0.1);
-        }
-        if(sideSensorDistance.getDistance(DistanceUnit.CM) == DistanceUnit.infinity){
-            turnWithGyro(10, 0.1);
-        }
-        else{
-            moveToPosition(0.5, 0.1);
-        }
-            telemetry.addData("Side Range", "%.2f cm", sideSensorDistance.getDistance(DistanceUnit.CM));
-            telemetry.addData("Front Range", "%.2f cm", frontRangesensor.getDistance(DistanceUnit.CM));
+        configureMotors();
+        //
+        withoutEncoder();
+//        telInit("complete");
+        //
+        waitForStart();
+        //
+        drive(.2);
+        //
+        while (frontRangesensor.getDistance(DistanceUnit.INCH)> 5){
+            if (sideSensorDistance.getDistance(DistanceUnit.INCH) < 5){
+                telMove("Too close!");
+                right.setPower(right.getPower() - .01);
+            } else if (sideSensorDistance.getDistance(DistanceUnit.INCH) > 8 || sideSensorDistance.getDistance(DistanceUnit.INCH) == DistanceUnit.infinity){
+                telMove("Too far!");
+                left.setPower(left.getPower() - .01);
+            } else {
+                telMove("Just Right");
+                drive(.2);
+            }
             telemetry.update();
         }
+        waitify(10000);
 
-//        turnWithGyro(45,0.50);
-//        moveToPosition(5, 0.50);
+        if (frontRangesensor.getDistance(DistanceUnit.INCH)> 5){
+            while (frontRangesensor.getDistance(DistanceUnit.INCH) > 5){
+                if (sideSensorDistance.getDistance(DistanceUnit.INCH) < 5){
+                    telMove("Too close!");
+                    right.setPower(right.getPower() - .01);
+                } else if (sideSensorDistance.getDistance(DistanceUnit.INCH) > 8 || sideSensorDistance.getDistance(DistanceUnit.INCH) == DistanceUnit.infinity){
+                    telMove("Too far!");
+                    left.setPower(left.getPower() - .01);
+                } else {
+                    telMove("Just Right");
+                    drive(.2);
+                }
+                telemetry.update();
+            }
+        }
+
     }
 }
 //This is not accurate it needs to be tested
