@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class Stabby extends OmniMode {
 
+    //jk don't use this program
+
     DcMotor sirStabby;
     Servo sabbiesClaw;
     DigitalChannel stabbyUp;
