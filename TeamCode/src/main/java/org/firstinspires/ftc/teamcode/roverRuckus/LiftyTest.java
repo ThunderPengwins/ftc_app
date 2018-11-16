@@ -12,7 +12,12 @@ public class LiftyTest extends OmniMode {
     DigitalChannel down;
     DigitalChannel up;
     Servo latch;
-
+    //
+    //closed = 1
+    //open = 0.3
+    //
+    static final Double closed = 1.0;
+    static final Double open = 0.3;
     //
     public void runOpMode() {
         //
@@ -33,13 +38,13 @@ public class LiftyTest extends OmniMode {
         //
         //<editor-fold desc="Variables">
         Double power = .5;
-        Float leftC = 0F;
+        Float leftC;
         Float rightC = 0F;
         Boolean auto = false;
         Integer direction = 1;
         Boolean powerP = false;
         Double position = 0.0;
-        Boolean powerO = false;
+        Integer movement = 0;
         //</editor-fold>
         //
         while (opModeIsActive()) {
@@ -62,22 +67,13 @@ public class LiftyTest extends OmniMode {
             //</editor-fold>
             //
             //<editor-fold desc="Change power">
-            if (gamepad2.b && !powerP) {
-                power += .1;
-                powerP = true;
-            } else if (gamepad2.a && !powerP) {
-                power -= .1;
-                powerP = true;
-            } else if (!(gamepad2.a && gamepad2.b) && powerP) {
-                powerP = false;
-            }
             //</editor-fold>
             //
             //<editor-fold desc="set moter power">
             if (((!up.getState() && leftC > 0) || (!down.getState() && leftC < 0)) && !auto) {
                 vertical.setPower(leftC);
             } else if (auto) {
-                if (!((up.getState() && gamepad2.y) || (down.getState() && gamepad2.x))) {
+                if (!((up.getState() && direction == 1) || (down.getState() && direction == -1))) {
                     vertical.setPower(power * direction);
                 } else {
                     vertical.setPower(0);
@@ -85,14 +81,10 @@ public class LiftyTest extends OmniMode {
                 }
             }
 
-            if (gamepad2.x && !powerO) {
-                powerO = true;
-                position += .1;
-            } else if (gamepad2.y && !powerO) {
-                powerO = true;
-                position -= .1;
-            } else if (!(gamepad2.y && gamepad2.b) && powerO) {
-                powerO = false;
+            if (gamepad2.a) {
+                position = open;
+            } else if (gamepad2.b){
+                position = closed;
             }
             //
             latch.setPosition(position);
@@ -103,7 +95,6 @@ public class LiftyTest extends OmniMode {
             telemetry.addData("position", position);
             telemetry.addData("up", up.getState());
             telemetry.addData("down", down.getState());
-            telemetry.addData("go?", powerO);
             telemetry.addData("auto?", auto);
             telemetry.update();
         }
