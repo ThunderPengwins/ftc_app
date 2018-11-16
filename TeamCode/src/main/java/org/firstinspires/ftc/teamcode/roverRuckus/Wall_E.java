@@ -5,6 +5,7 @@ import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -16,17 +17,15 @@ public class Wall_E extends OmniAutoMode{
     //
     private GoldAlignDetector detector;
     ModernRoboticsI2cRangeSensor jeep;
+    DistanceSensor wall;
     //
     public void runOpMode(){
-        //
-        Double first = 1234.5678;
-        Double second = 2345.6789;
-        Double third = 3456.7890;
         //
         telInit("hardware");
         left = hardwareMap.dcMotor.get("left");
         right = hardwareMap.dcMotor.get("right");
         jeep = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "jeep");
+        wall = hardwareMap.get(DistanceSensor.class, "wall");
         //
         configureMotors();
         //
@@ -71,11 +70,11 @@ public class Wall_E extends OmniAutoMode{
         Integer position;
         //Check position of mineral
         if (-angles.firstAngle < 80){
-            position = 0;
+            position = -1;
         }else if(80 <= -angles.firstAngle && -angles.firstAngle < 100){
-            position = 1;
+            position = 0;
         }else{
-            position = 2;
+            position = 1;
         }
         //
         telMove("waiting");
@@ -89,35 +88,60 @@ public class Wall_E extends OmniAutoMode{
         //
         telMove("complete");
         //turn if needed
-        if (position == 0){
+        if (position == -1){
             telMove("turn right");
-            turnWithGyro(30, .1);
+            turnWithGyro(20, .1);
             toPosition();
             telMove("more stuff!");
-            moveToPosition(2, .1);
-        } else if(position == 2){
+            moveToPosition(5, .1);
+        } else if(position == 1){
             telMove("turn left");
-            turnWithGyro(30, -.1);
+            turnWithGyro(20, -.1);
             toPosition();
             telMove("more stuff!");
-            moveToPosition(2, .1);
+            moveToPosition(5, .1);
         }
         //move to depot
-        moveToPosition(10, .1);
+        moveToPosition(36, .1);
         //back away from the cube
         moveToPosition(-2, .1);
         //turn towards wall
-        turnWithGyro(45, .1);
+        turnWithGyro(45 + ((position) * 35), .1);//turn different based on position
         //
         /*
-        insert deposite marker
+        insert deposit marker
          */
         //drive to wall
         drive(.1);
         while (jeep.getDistance(DistanceUnit.INCH) > 5){}
         drive(0);
         //
-
+        turnWithGyro(90, .1);
+        //
+        followall(54);
+        //
+        /*
+        Break the plane
+         */
+        //
     }
     //
+    public void followall(Integer distance){
+        drive(.2);
+        //
+        while (jeep.getDistance(DistanceUnit.INCH) > distance){
+            if (wall.getDistance(DistanceUnit.INCH) < 5){
+                telMove("Too close!");
+                right.setPower(right.getPower() - .01);
+            } else if (wall.getDistance(DistanceUnit.INCH) > 8 || wall.getDistance(DistanceUnit.INCH) == DistanceUnit.infinity){
+                telMove("Too far!");
+                left.setPower(left.getPower() - .01);
+            } else {
+                telMove("Just Right");
+                drive(.2);
+            }
+        }
+        //
+        drive(0);
+    }
 }
