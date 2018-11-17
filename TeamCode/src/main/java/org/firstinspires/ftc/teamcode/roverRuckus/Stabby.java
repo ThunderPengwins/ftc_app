@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.sun.tools.javac.util.Position;
 
 @TeleOp(name = "Stabby", group = "TeleOp")
 
@@ -17,18 +18,20 @@ public class Stabby extends OmniMode {
     DigitalChannel stabbyUp;
     DigitalChannel stabbyDown;
     Servo latch;
-    DcMotor vertical;
+//    DcMotor vertical;
 
 
     public void runOpMode(){
 
         telInit("hardware");
-        sirStabby = hardwareMap.dcMotor.get("Stabby");
-        sabbiesClaw = hardwareMap.servo.get("Stop");
+        sirStabby = hardwareMap.dcMotor.get("vertical");
+        sabbiesClaw = hardwareMap.servo.get("latch");
         stabbyDown = hardwareMap.get(DigitalChannel.class, "down");
         stabbyUp = hardwareMap.get(DigitalChannel.class, "up");
+        left = hardwareMap.dcMotor.get("left");
+        right = hardwareMap.dcMotor.get("right");
         Float stabbyVertical = 0F;
-        Float clawOpen = 0F;
+        Float sabbiesGrabber = 0F;
         Double power = .5;
         Boolean auto = false;
         Integer direction = 1;
@@ -36,26 +39,14 @@ public class Stabby extends OmniMode {
         Double position = 0.0;
         Boolean powerO = false;
         configureMotors();
-        vertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        vertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        sirStabby.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        sirStabby.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         waitForStartify();
 
         while (opModeIsActive()){
-        stabbyVertical = -gamepad2.left_stick_y;
-        clawOpen = -gamepad2.right_stick_x;
+//        stabbyVertical = -gamepad2.left_stick_y;
+//        sabbiesGrabber = -gamepad2.right_stick_x;
 
-
-            if (gamepad2.y) {
-                direction = 1;
-                if (!auto) {
-                    auto = true;
-                }
-            } else if (gamepad2.x) {
-                direction = -1;
-                if (!auto) {
-                    auto = true;
-                }
-            }
 
             if (gamepad2.b && !powerP) {
                 power += .1;
@@ -67,16 +58,12 @@ public class Stabby extends OmniMode {
                 powerP = false;
             }
 
-            if (((!stabbyUp.getState() && stabbyVertical > 0) || (!stabbyDown.getState() && stabbyVertical < 0)) && !auto) {
-                vertical.setPower(stabbyVertical);
-            } else if (auto) {
-                if (!((stabbyUp.getState() && gamepad2.y) || (stabbyDown.getState() && gamepad2.x))) {
-                    vertical.setPower(power * direction);
-                } else {
-                    vertical.setPower(0);
-                    auto = false;
-                }
+            if (((!stabbyUp.getState() == false) || (!stabbyDown.getState() == false)) && !auto) {
+                sirStabby.setPower(0);
             }
+
+            telemetry.addData("Switch", stabbyDown.getState());
+            telemetry.update();
 
             if (gamepad2.x && !powerO) {
                 powerO = true;
@@ -88,6 +75,6 @@ public class Stabby extends OmniMode {
                 powerO = false;
             }
 
-            latch.setPosition(position);
+            sabbiesClaw.setPosition(position);
 
 }}}
