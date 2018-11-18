@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.roverRuckus;
 
-import android.hardware.Sensor;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -15,7 +13,7 @@ public abstract class OmniMode extends LinearOpMode {
 
     //
     public void configureMotors(){
-        right.setDirection(DcMotorSimple.Direction.REVERSE);
+        left.setDirection(DcMotorSimple.Direction.REVERSE);
     }
     //
     public boolean likeToMoveIt(){

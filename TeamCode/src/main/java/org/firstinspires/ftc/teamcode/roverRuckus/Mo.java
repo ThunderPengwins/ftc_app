@@ -9,20 +9,22 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@TeleOp (name = "The Tele-Op To Use", group = "usable")
-public class BasicTeleOp extends OmniMode {
+@TeleOp (name = "Mo", group = "real")
+public class Mo extends OmniMode {
     //
     ModernRoboticsI2cRangeSensor jeep;
     DcMotor vertical;
     DigitalChannel down;
     DigitalChannel up;
     Servo latch;
+    Servo flapper;
+    Servo releaseTheHounds;
     //
     //closed = 1
     //open = 0.3
     //
-    static final Double closed = 1.0;
-    static final Double open = 0.3;
+    static final Double closed = 0.5;
+    static final Double open = 0.1;
     //
     public void runOpMode(){
         //
@@ -34,6 +36,8 @@ public class BasicTeleOp extends OmniMode {
         down = hardwareMap.get(DigitalChannel.class, "down");
         up = hardwareMap.get(DigitalChannel.class, "up");
         latch = hardwareMap.servo.get("latch");
+        releaseTheHounds = hardwareMap.servo.get("release");
+        flapper = hardwareMap.servo.get("flapper");
         //
         down.setMode(DigitalChannel.Mode.INPUT);
         up.setMode(DigitalChannel.Mode.INPUT);
@@ -64,13 +68,8 @@ public class BasicTeleOp extends OmniMode {
         //
         while (opModeIsActive()){
             //
-            if (jeep.getDistance(DistanceUnit.INCH) > 10 || ((-gamepad1.left_stick_y < 0) && (-gamepad1.right_stick_y < 0))) {
-                left.setPower(-gamepad1.left_stick_y * leftPower);
-                right.setPower(-gamepad1.right_stick_y * rightPower);
-            } else {
-                left.setPower(0);
-                right.setPower(0);
-            }
+            left.setPower(-gamepad1.left_stick_y * leftPower);
+            right.setPower(-gamepad1.right_stick_y * rightPower);
             //
             if (gamepad1.right_trigger > 0){
                 rightPower = .2;
@@ -93,10 +92,10 @@ public class BasicTeleOp extends OmniMode {
                 leftPower = .5;
                 telemetry.addData("No action", "Left");
             }
-
+            //
             telemetry.addData("distance", jeep.getDistance(DistanceUnit.INCH));
             telemetry.update();
-
+            //
             leftC = -gamepad2.left_stick_y;//left y
             rightC = -gamepad2.right_stick_x;//right x
             //
@@ -113,13 +112,12 @@ public class BasicTeleOp extends OmniMode {
                 }
             }
             //</editor-fold>
-            //
             //<editor-fold desc="Change power">
             //</editor-fold>
             //
             //<editor-fold desc="set moter power">
             if (((!up.getState() && leftC > 0) || (!down.getState() && leftC < 0)) && !auto) {
-                vertical.setPower(leftC);
+                vertical.setPower(0);
             } else if (auto) {
                 if (!((up.getState() && direction == 1) || (down.getState() && direction == -1))) {
                     vertical.setPower(power * direction);
@@ -128,12 +126,25 @@ public class BasicTeleOp extends OmniMode {
                     auto = false;
                 }
             }
-
+            //
             if (gamepad2.a) {
                 position = open;
             } else if (gamepad2.b){
                 position = closed;
             }
+            //
+            if (gamepad2.dpad_right){
+                releaseTheHounds.setPosition(.4);
+            } else if(gamepad2.dpad_left){
+                releaseTheHounds.setPosition(0);
+            }
+            //
+            if (gamepad2.dpad_up){
+                flapper.setPosition(1);
+            } else if (gamepad2.dpad_down){
+                flapper.setPosition(0);
+            }
+            //
             //
             latch.setPosition(position);
             //</editor-fold>

@@ -12,12 +12,14 @@ public class LiftyTest extends OmniMode {
     DigitalChannel down;
     DigitalChannel up;
     Servo latch;
+    Servo flapper;
+    Servo releaseTheHounds;
     //
     //closed = 1
     //open = 0.3
     //
-    static final Double closed = 1.0;
-    static final Double open = 0.3;
+    static final Double closed = .5;
+    static final Double open = 0.1;
     //
     public void runOpMode() {
         //
@@ -26,6 +28,8 @@ public class LiftyTest extends OmniMode {
         down = hardwareMap.get(DigitalChannel.class, "down");
         up = hardwareMap.get(DigitalChannel.class, "up");
         latch = hardwareMap.servo.get("latch");
+        releaseTheHounds = hardwareMap.servo.get("release");
+        flapper = hardwareMap.servo.get("flapper");
         //
         down.setMode(DigitalChannel.Mode.INPUT);
         up.setMode(DigitalChannel.Mode.INPUT);
@@ -37,13 +41,13 @@ public class LiftyTest extends OmniMode {
         waitForStartify();
         //
         //<editor-fold desc="Variables">
-        Double power = .5;
+        Double power = 1.0;
         Float leftC;
         Float rightC = 0F;
         Boolean auto = false;
         Integer direction = 1;
         Boolean powerP = false;
-        Double position = 0.0;
+        Double position = 0.5;
         Integer movement = 0;
         //</editor-fold>
         //
@@ -71,7 +75,7 @@ public class LiftyTest extends OmniMode {
             //
             //<editor-fold desc="set moter power">
             if (((!up.getState() && leftC > 0) || (!down.getState() && leftC < 0)) && !auto) {
-                vertical.setPower(leftC);
+                vertical.setPower(0);
             } else if (auto) {
                 if (!((up.getState() && direction == 1) || (down.getState() && direction == -1))) {
                     vertical.setPower(power * direction);
@@ -80,11 +84,23 @@ public class LiftyTest extends OmniMode {
                     auto = false;
                 }
             }
-
+            //
             if (gamepad2.a) {
                 position = open;
             } else if (gamepad2.b){
                 position = closed;
+            }
+            //
+            if (gamepad2.dpad_right){
+                releaseTheHounds.setPosition(.4);
+            } else if(gamepad2.dpad_left){
+                releaseTheHounds.setPosition(0);
+            }
+            //
+            if (gamepad2.dpad_up){
+                flapper.setPosition(1);
+            } else if (gamepad2.dpad_down){
+                flapper.setPosition(0);
             }
             //
             latch.setPosition(position);
@@ -96,6 +112,7 @@ public class LiftyTest extends OmniMode {
             telemetry.addData("up", up.getState());
             telemetry.addData("down", down.getState());
             telemetry.addData("auto?", auto);
+            telemetry.addData("hounds", releaseTheHounds.getPosition());
             telemetry.update();
         }
     }

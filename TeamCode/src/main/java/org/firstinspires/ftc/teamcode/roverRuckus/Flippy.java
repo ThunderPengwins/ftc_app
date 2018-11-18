@@ -1,14 +1,5 @@
 package org.firstinspires.ftc.teamcode.roverRuckus;
 
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
-import static java.lang.Double.NaN;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -28,7 +19,7 @@ public class Flippy extends OmniAutoMode{
             flippy.setPosition(wow);
             telemetry.addData("Degrees", flippy.getPosition());
             telemetry.update();
-            waitify(1000);
+            countdown(1);
         }
 }}
 //Nora is cool

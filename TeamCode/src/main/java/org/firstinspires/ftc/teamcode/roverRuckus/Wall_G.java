@@ -15,8 +15,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous (name = "Wall-E", group = "real")
-public class Wall_E extends OmniAutoMode{
+@Autonomous (name = "Wall-G", group = "real")
+public class Wall_G extends OmniAutoMode{
     //
     private GoldAlignDetector detector;
     ModernRoboticsI2cRangeSensor jeep;
@@ -123,52 +123,22 @@ public class Wall_E extends OmniAutoMode{
         sleep(1000);
         //
         telMove("forward");
-        withoutEncoder();
-        drive(.2);
-        //
-        while (detector.isFound()){}
-        drive(0);
+        moveToPosition(20, .2);
         //
         telMove("complete");
         //turn if needed
         if (position == -1){
             telMove("turn right");
-            turnWithGyro(20, .3);
-            toPosition();
-            telMove("more stuff!");
-            moveToPosition(20, .3);
+            turnWithGyro(10, .3);
             //
-            turnWithGyro(55, .3);
+            moveToPosition(8, .3);
             //
-            moveToPosition(10, .3);
+            turnWithGyro(35, .3);
         } else if(position == 1){
-            toPosition();
-            telMove("more stuff!");
-            moveToPosition(15, -.3);
-            //
-            turnWithGyro(70, -.3);
-            //
-            moveToPosition(28, .3);
-        } else {
-            moveToPosition(35, .2);
+            turnWithGyro(15, -.3);
         }
-        //back away from the cube
-        moveToPosition(-2, .2);
-        //turn towards wall
-        turnWithGyro(45 + ((-position) * 35), -.3);//turn different based on position
-        //
-        releaseTheHounds.setPosition(.4);
-        sleep(1000);
-        //drive to wall
-        //drive(.1);
-        //while (jeep.getDistance(DistanceUnit.INCH) > 5){}
-        //drive(0);
-        //
-        //turnWithGyro(90, .1);
-        //
-        //followall(54);
-        //
-        //flapper.setPosition(1);
+        flapper.setPosition(1);
+        sleep(2000);
         //
     }
     //

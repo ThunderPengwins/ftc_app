@@ -2,13 +2,9 @@ package org.firstinspires.ftc.teamcode.roverRuckus;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
-import static java.lang.Double.NaN;
 
 @Autonomous(name = "The Angry One", group = "Auto")
 
@@ -65,7 +61,7 @@ public class AutonmousPurple extends OmniAutoMode{
             }
             telemetry.update();
         }
-        waitify(10000);
+        countdown(10);
 
         if (frontRangesensor.getDistance(DistanceUnit.INCH)> 5){
             while (frontRangesensor.getDistance(DistanceUnit.INCH) > 5){
