@@ -29,7 +29,7 @@ public class Wall_E extends OmniAutoMode{
     Servo releaseTheHounds;
     //
     static final Double closed = .5;
-    static final Double open = 0.1;
+    static final Double open = 0.0;
     //
     public void runOpMode(){
         //
@@ -55,29 +55,11 @@ public class Wall_E extends OmniAutoMode{
         vertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //
         configureMotors();
-        //
-        withoutEncoder();
         //</editor-fold>
         //
         //<editor-fold desc="DogeCV">
         telInit("DogeCV");
         //
-        detector = new GoldAlignDetector(); // Create detector
-        detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance()); // Initialize it with the app context and camera
-        detector.useDefaults(); // Set detector to use default setting
-        // Optional tuning
-        detector.alignSize = 100; // How wide (in pixels) is the range in which the gold object will be aligned. (Represented by green bars in the preview)
-        detector.alignPosOffset = -10; // How far from center frame to offset this alignment zone.
-        detector.downscale = 0.4; // How much to downscale the input frames
-
-        detector.areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA; // Can also be PERFECT_AREA
-        //detector.perfectAreaScorer.perfectArea = 10000; // if using PERFECT_AREA scoring
-        detector.maxAreaScorer.weight = 0.005; //
-
-        detector.ratioScorer.weight = 5; //
-        detector.ratioScorer.perfectRatio = 1.0; // Ratio adjustment
-        //
-        detector.enable(); // Start the detector!
         //</editor-fold>
         //
         telInit("gyro");
@@ -89,26 +71,47 @@ public class Wall_E extends OmniAutoMode{
         //
         telInit("complete");
         //
+        sleep(1000);
+        //
         waitForStartify();
+        //
+        sleep(300);
+        //
+        detector = new GoldAlignDetector(); // Create detector
+        detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance()); // Initialize it with the app context and camera
+        detector.useDefaults(); // Set detector to use default setting
+        // Optional tuning
+        detector.alignSize = 100; // How wide (in pixels) is the range in which the gold object will be aligned. (Represented by green bars in the preview)
+        detector.alignPosOffset = -50; // How far from center frame to offset this alignment zone.
+        detector.downscale = 0.4; // How much to downscale the input frames
+
+        detector.areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA; // Can also be PERFECT_AREA
+        //detector.perfectAreaScorer.perfectArea = 10000; // if using PERFECT_AREA scoring
+        detector.maxAreaScorer.weight = 0.005; //
+
+        detector.ratioScorer.weight = 5; //
+        detector.ratioScorer.perfectRatio = 1.0; // Ratio adjustment
+        //
+        detector.enable(); // Start the detector!
         //
         lowerBot(2.0);
         //
-        turnWithGyro(20, .3);
-        withoutEncoder();
+        sleep(1000);
         //
-        turn(.3);
+        turnWithGyro(30, .3);
+        //
+        turn(.22);
         time.reset();
         //Turn towards mineral
         telMove("Looking for mineral");
-        while (!detector.getAligned() && opModeIsActive()){
+        while (!detector.getAligned() && opModeIsActive() || detector.getY() > 200){
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            telemetry.addData("degrees", -angles.firstAngle);
+            telemetry.addData("height", detector.getY());
             telemetry.update();
         }
         turn(0);
         Double stoptime = time.milliseconds();
         Integer position;
-        turnWithGyro(10, -.4);
         //Check position of mineral
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         if (getAngle() < 80){
@@ -123,20 +126,17 @@ public class Wall_E extends OmniAutoMode{
         sleep(1000);
         //
         telMove("forward");
-        withoutEncoder();
-        drive(.2);
-        //
-        while (detector.isFound()){}
-        drive(0);
+        moveToPosition(10, .3);
         //
         telMove("complete");
         //turn if needed
         if (position == -1){
+            moveToPosition(10, .3);
             telMove("turn right");
             turnWithGyro(20, .3);
             toPosition();
             telMove("more stuff!");
-            moveToPosition(20, .3);
+            moveToPosition(10,.3);
             //
             turnWithGyro(55, .3);
             //
@@ -144,7 +144,7 @@ public class Wall_E extends OmniAutoMode{
         } else if(position == 1){
             toPosition();
             telMove("more stuff!");
-            moveToPosition(15, -.3);
+            moveToPosition(25, -.3);
             //
             turnWithGyro(70, -.3);
             //

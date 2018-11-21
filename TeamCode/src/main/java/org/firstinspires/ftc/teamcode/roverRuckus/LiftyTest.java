@@ -70,9 +70,6 @@ public class LiftyTest extends OmniMode {
             }
             //</editor-fold>
             //
-            //<editor-fold desc="Change power">
-            //</editor-fold>
-            //
             //<editor-fold desc="set moter power">
             if (((!up.getState() && leftC > 0) || (!down.getState() && leftC < 0)) && !auto) {
                 vertical.setPower(0);

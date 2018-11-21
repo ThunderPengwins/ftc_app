@@ -10,7 +10,6 @@ public abstract class OmniMode extends LinearOpMode {
     //
     DcMotor left;
     DcMotor right;
-
     //
     public void configureMotors(){
         left.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -26,11 +25,13 @@ public abstract class OmniMode extends LinearOpMode {
     }
     //
     public void drive(double input){
+        withoutEncoder();
         left.setPower(input);
         right.setPower(input);
     }
     //
     public void turn(double input){
+        withoutEncoder();
         left.setPower(input);
         right.setPower(-input);
     }
@@ -59,6 +60,7 @@ public abstract class OmniMode extends LinearOpMode {
         telemetry.addData("Initializing", message);
         telemetry.update();
     }
+    //
     public void telMove(String message){
         telemetry.addData("Move", message);
         telemetry.update();

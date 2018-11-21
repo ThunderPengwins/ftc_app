@@ -29,7 +29,7 @@ public class Wall_G extends OmniAutoMode{
     Servo releaseTheHounds;
     //
     static final Double closed = .5;
-    static final Double open = 0.1;
+    static final Double open = 0.0;
     //
     public void runOpMode(){
         //
@@ -55,29 +55,10 @@ public class Wall_G extends OmniAutoMode{
         vertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //
         configureMotors();
-        //
-        withoutEncoder();
         //</editor-fold>
         //
         //<editor-fold desc="DogeCV">
         telInit("DogeCV");
-        //
-        detector = new GoldAlignDetector(); // Create detector
-        detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance()); // Initialize it with the app context and camera
-        detector.useDefaults(); // Set detector to use default setting
-        // Optional tuning
-        detector.alignSize = 100; // How wide (in pixels) is the range in which the gold object will be aligned. (Represented by green bars in the preview)
-        detector.alignPosOffset = -10; // How far from center frame to offset this alignment zone.
-        detector.downscale = 0.4; // How much to downscale the input frames
-
-        detector.areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA; // Can also be PERFECT_AREA
-        //detector.perfectAreaScorer.perfectArea = 10000; // if using PERFECT_AREA scoring
-        detector.maxAreaScorer.weight = 0.005; //
-
-        detector.ratioScorer.weight = 5; //
-        detector.ratioScorer.perfectRatio = 1.0; // Ratio adjustment
-        //
-        detector.enable(); // Start the detector!
         //</editor-fold>
         //
         telInit("gyro");
@@ -89,14 +70,36 @@ public class Wall_G extends OmniAutoMode{
         //
         telInit("complete");
         //
+        sleep(1000);
+        //
         waitForStartify();
+        //
+        sleep(1000);
+        //
+        detector = new GoldAlignDetector(); // Create detector
+        detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance()); // Initialize it with the app context and camera
+        detector.useDefaults(); // Set detector to use default setting
+        // Optional tuning
+        detector.alignSize = 100; // How wide (in pixels) is the range in which the gold object will be aligned. (Represented by green bars in the preview)
+        detector.alignPosOffset = -50; // How far from center frame to offset this alignment zone.
+        detector.downscale = 0.4; // How much to downscale the input frames
+
+        detector.areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA; // Can also be PERFECT_AREA
+        //detector.perfectAreaScorer.perfectArea = 10000; // if using PERFECT_AREA scoring
+        detector.maxAreaScorer.weight = 0.005; //
+
+        detector.ratioScorer.weight = 5; //
+        detector.ratioScorer.perfectRatio = 1.0; // Ratio adjustment
+        //
+        detector.enable(); // Start the detector!
         //
         lowerBot(2.0);
         //
-        turnWithGyro(20, .3);
-        withoutEncoder();
+        sleep(1000);
         //
-        turn(.3);
+        turnWithGyro(30, .3);
+        //
+        turn(.25);
         time.reset();
         //Turn towards mineral
         telMove("Looking for mineral");
@@ -125,7 +128,7 @@ public class Wall_G extends OmniAutoMode{
         telMove("forward");
         moveToPosition(20, .2);
         //
-        telMove("complete");
+        /*telMove("complete");
         //turn if needed
         if (position == -1){
             telMove("turn right");
@@ -136,7 +139,7 @@ public class Wall_G extends OmniAutoMode{
             turnWithGyro(35, .3);
         } else if(position == 1){
             turnWithGyro(15, -.3);
-        }
+        }*/
         flapper.setPosition(1);
         sleep(2000);
         //

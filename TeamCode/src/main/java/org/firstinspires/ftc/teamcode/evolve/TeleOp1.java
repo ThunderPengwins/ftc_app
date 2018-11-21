@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.evolve;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 //This is a comment/
 
@@ -13,7 +12,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
     /*
 
     Let's start by setting up our program
-
     Step 1 - name the program
         type @TeleOp (name="TeleOp1",group="evolve"
 
