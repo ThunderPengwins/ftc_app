@@ -4,7 +4,6 @@ import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -15,8 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous (name = "Wall-E", group = "real")
-public class Wall_E extends OmniAutoMode{
+public abstract class Globulus extends OmniAutoMode{
     //<editor-fold desc="Hardware">
     private GoldAlignDetector detector;
     ModernRoboticsI2cRangeSensor jeep;
@@ -31,7 +29,7 @@ public class Wall_E extends OmniAutoMode{
     static final Double closed = .5;
     static final Double open = 0.0;
     //</editor-fold>
-    public void runOpMode(){
+    public void sarker() {
         //
         telInit("hardware");
         //<editor-fold desc="HardwareMap">
@@ -107,7 +105,7 @@ public class Wall_E extends OmniAutoMode{
         time.reset();
         //Turn towards mineral
         telMove("Looking for mineral");
-        while (!detector.getAligned() && opModeIsActive() || detector.getY() > 200){
+        while (!detector.getAligned() && opModeIsActive() || detector.getY() > 200) {
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             telemetry.addData("height", detector.getY());
             telemetry.update();
@@ -117,11 +115,11 @@ public class Wall_E extends OmniAutoMode{
         Integer position;
         //Check position of mineral
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        if (getAngle() < 80){
+        if (getAngle() < 80) {
             position = -1;
-        }else if(80 <= getAngle() && getAngle() < 100){
+        } else if (80 <= getAngle() && getAngle() < 100) {
             position = 0;
-        }else{
+        } else {
             position = 1;
         }
         //
@@ -133,18 +131,18 @@ public class Wall_E extends OmniAutoMode{
         telMove("forward");
         moveToPosition(10, .3);
         //Push into depot
-        if (position == -1){
+        if (position == -1) {
             moveToPosition(10, .3);
             telMove("turn right");
             turnWithGyro(20, .3);
             toPosition();
             telMove("more stuff!");
-            moveToPosition(10,.3);
+            moveToPosition(10, .3);
             //
             turnWithGyro(55, .3);
             //
             moveToPosition(10, .3);
-        } else if(position == 1){
+        } else if (position == 1) {
             toPosition();
             telMove("more stuff!");
             moveToPosition(25, -.3);
@@ -166,28 +164,10 @@ public class Wall_E extends OmniAutoMode{
         //
         turnWithGyro(45, .3);
         moveToPosition(-10, .3);
+        //
     }
     //
-    public void followall(Integer distance){
-        drive(.2);
-        //
-        while (jeep.getDistance(DistanceUnit.INCH) > distance){
-            if (wall.getDistance(DistanceUnit.INCH) < 5){
-                telMove("Too close!");
-                right.setPower(right.getPower() - .01);
-            } else if (wall.getDistance(DistanceUnit.INCH) > 8 || wall.getDistance(DistanceUnit.INCH) == DistanceUnit.infinity){
-                telMove("Too far!");
-                left.setPower(left.getPower() - .01);
-            } else {
-                telMove("Just Right");
-                drive(.2);
-            }
-        }
-        //
-        drive(0);
-    }
-    //
-    public void lowerBot(Double power){
+    public void lowerBot (Double power){
         //
         vertical.setPower(power);
         //
@@ -199,4 +179,24 @@ public class Wall_E extends OmniAutoMode{
         vertical.setPower(0);
         latch.setPosition(open);
     }
+    //
+    public void followall (Integer distance){
+        drive(.2);
+        //
+        while (jeep.getDistance(DistanceUnit.INCH) > distance) {
+            if (wall.getDistance(DistanceUnit.INCH) < 5) {
+                telMove("Too close!");
+                right.setPower(right.getPower() - .01);
+            } else if (wall.getDistance(DistanceUnit.INCH) > 8 || wall.getDistance(DistanceUnit.INCH) == DistanceUnit.infinity) {
+                telMove("Too far!");
+                left.setPower(left.getPower() - .01);
+            } else {
+                telMove("Just Right");
+                drive(.2);
+            }
+        }
+        //
+        drive(0);
+    }
 }
+

@@ -1,12 +1,9 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.relicrecovery;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-
-import org.firstinspires.ftc.teamcode.relicrecoveryv2.PengwinFin;
-import org.firstinspires.ftc.teamcode.relicrecoveryv2.PengwinWing;
 
 /**
  * Created by wildgirls on 2/8/2018.

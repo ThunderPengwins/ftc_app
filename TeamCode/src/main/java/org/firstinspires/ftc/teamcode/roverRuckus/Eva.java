@@ -15,8 +15,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@Autonomous (name = "Wall-E", group = "real")
-public class Wall_E extends OmniAutoMode{
+@Autonomous (name = "Eva", group = "real")
+public class Eva extends OmniAutoMode{
     //<editor-fold desc="Hardware">
     private GoldAlignDetector detector;
     ModernRoboticsI2cRangeSensor jeep;
@@ -31,6 +31,7 @@ public class Wall_E extends OmniAutoMode{
     static final Double closed = .5;
     static final Double open = 0.0;
     //</editor-fold>
+    //
     public void runOpMode(){
         //
         telInit("hardware");
@@ -163,9 +164,6 @@ public class Wall_E extends OmniAutoMode{
         //
         releaseTheHounds.setPosition(.4);
         sleep(1000);
-        //
-        turnWithGyro(45, .3);
-        moveToPosition(-10, .3);
     }
     //
     public void followall(Integer distance){

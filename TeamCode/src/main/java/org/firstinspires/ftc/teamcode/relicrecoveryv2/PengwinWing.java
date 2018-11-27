@@ -1,19 +1,10 @@
 package org.firstinspires.ftc.teamcode.relicrecoveryv2;
 
-import android.text.method.Touch;
-
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.teamcode.HardwareSensorMap;
-import org.firstinspires.ftc.teamcode.TouchSensorCheck;
 
 /**
  * Created by Nora and Eric on 12/30/2017.

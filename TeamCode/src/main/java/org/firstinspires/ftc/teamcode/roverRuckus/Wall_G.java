@@ -17,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @Autonomous (name = "Wall-G", group = "real")
 public class Wall_G extends OmniAutoMode{
-    //
+    //<editor-fold desc="Hardware">
     private GoldAlignDetector detector;
     ModernRoboticsI2cRangeSensor jeep;
     DistanceSensor wall;
@@ -30,11 +30,11 @@ public class Wall_G extends OmniAutoMode{
     //
     static final Double closed = .5;
     static final Double open = 0.0;
-    //
+    //</editor-fold>
     public void runOpMode(){
         //
         telInit("hardware");
-        //<editor-fold desc="Hardware">
+        //<editor-fold desc="HardwareMap">
         left = hardwareMap.dcMotor.get("left");
         right = hardwareMap.dcMotor.get("right");
         jeep = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "jeep");
@@ -57,10 +57,7 @@ public class Wall_G extends OmniAutoMode{
         configureMotors();
         //</editor-fold>
         //
-        //<editor-fold desc="DogeCV">
-        telInit("DogeCV");
-        //</editor-fold>
-        //
+        //<editor-fold desc="Servos and Gyro">
         telInit("gyro");
         initGyro();
         //
@@ -71,11 +68,14 @@ public class Wall_G extends OmniAutoMode{
         telInit("complete");
         //
         sleep(1000);
+        //</editor-fold>
         //
         waitForStartify();
         //
         sleep(1000);
         //
+        //<editor-fold desc="DogeCV">
+        telInit("DogeCV");
         detector = new GoldAlignDetector(); // Create detector
         detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance()); // Initialize it with the app context and camera
         detector.useDefaults(); // Set detector to use default setting
@@ -92,7 +92,9 @@ public class Wall_G extends OmniAutoMode{
         detector.ratioScorer.perfectRatio = 1.0; // Ratio adjustment
         //
         detector.enable(); // Start the detector!
+        //</editor-fold>
         //
+        //<editor-fold desc="Turn to Mineral">
         lowerBot(2.0);
         //
         sleep(1000);
@@ -124,22 +126,11 @@ public class Wall_G extends OmniAutoMode{
         //
         telMove(position.toString());
         sleep(1000);
+        //</editor-fold>
         //
         telMove("forward");
         moveToPosition(20, .2);
         //
-        /*telMove("complete");
-        //turn if needed
-        if (position == -1){
-            telMove("turn right");
-            turnWithGyro(10, .3);
-            //
-            moveToPosition(8, .3);
-            //
-            turnWithGyro(35, .3);
-        } else if(position == 1){
-            turnWithGyro(15, -.3);
-        }*/
         flapper.setPosition(1);
         sleep(2000);
         //

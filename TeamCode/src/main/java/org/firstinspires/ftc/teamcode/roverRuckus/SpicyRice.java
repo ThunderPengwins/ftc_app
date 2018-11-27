@@ -21,5 +21,7 @@ public class SpicyRice extends OmniAutoMode {
         waitForStartify();
         //
         moveToPosition(10, .2);
+        //
+        turnWithGyro(90, .1);
     }
 }
