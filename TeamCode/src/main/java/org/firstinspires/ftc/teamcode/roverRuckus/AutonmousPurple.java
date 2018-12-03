@@ -2,20 +2,21 @@ package org.firstinspires.ftc.teamcode.roverRuckus;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @Autonomous(name = "The Angry One", group = "Auto")
-
+@Disabled
 public class AutonmousPurple extends OmniAutoMode{
     @Override
     public void runOpMode() {
         telInit("hardware");
         left = hardwareMap.dcMotor.get("left");
         right = hardwareMap.dcMotor.get("right");
-        sideSensorDistance = hardwareMap.get(DistanceSensor.class, "wall");
-        frontRangesensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "jeep");
+        wall = hardwareMap.get(DistanceSensor.class, "wall");
+        jeep = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "jeep");
         initGyro();
         configureMotors();
         toPosition();
@@ -48,11 +49,11 @@ public class AutonmousPurple extends OmniAutoMode{
         //
         drive(.2);
         //
-        while (frontRangesensor.getDistance(DistanceUnit.INCH)> 5){
-            if (sideSensorDistance.getDistance(DistanceUnit.INCH) < 5){
+        while (jeep.getDistance(DistanceUnit.INCH)> 5){
+            if (wall.getDistance(DistanceUnit.INCH) < 5){
                 telMove("Too close!");
                 right.setPower(right.getPower() - .01);
-            } else if (sideSensorDistance.getDistance(DistanceUnit.INCH) > 8 || sideSensorDistance.getDistance(DistanceUnit.INCH) == DistanceUnit.infinity){
+            } else if (wall.getDistance(DistanceUnit.INCH) > 8 || wall.getDistance(DistanceUnit.INCH) == DistanceUnit.infinity){
                 telMove("Too far!");
                 left.setPower(left.getPower() - .01);
             } else {
@@ -63,12 +64,12 @@ public class AutonmousPurple extends OmniAutoMode{
         }
         countdown(10);
 
-        if (frontRangesensor.getDistance(DistanceUnit.INCH)> 5){
-            while (frontRangesensor.getDistance(DistanceUnit.INCH) > 5){
-                if (sideSensorDistance.getDistance(DistanceUnit.INCH) < 5){
+        if (jeep.getDistance(DistanceUnit.INCH)> 5){
+            while (jeep.getDistance(DistanceUnit.INCH) > 5){
+                if (wall.getDistance(DistanceUnit.INCH) < 5){
                     telMove("Too close!");
                     right.setPower(right.getPower() - .01);
-                } else if (sideSensorDistance.getDistance(DistanceUnit.INCH) > 8 || sideSensorDistance.getDistance(DistanceUnit.INCH) == DistanceUnit.infinity){
+                } else if (wall.getDistance(DistanceUnit.INCH) > 8 || wall.getDistance(DistanceUnit.INCH) == DistanceUnit.infinity){
                     telMove("Too far!");
                     left.setPower(left.getPower() - .01);
                 } else {

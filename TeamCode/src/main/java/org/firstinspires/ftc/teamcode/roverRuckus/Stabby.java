@@ -1,14 +1,13 @@
 package org.firstinspires.ftc.teamcode.roverRuckus;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.sun.tools.javac.util.Position;
 
 @TeleOp(name = "Stabby", group = "TeleOp")
-
+@Disabled
 public class Stabby extends OmniMode {
 
     //jk don't use this program

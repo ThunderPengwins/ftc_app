@@ -4,14 +4,28 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+/**
+ * @author Eric
+ */
+
 @TeleOp (name = "Mo", group = "real")
 public class Mo extends OmniMode {
     //<editor-fold desc="hardware">
+    /**
+     * <h1>Hardware</h>
+     * <p>Here is where we create any piece of hardware that
+     * wasn't already created in the class above, OmniMode.
+     * Later on, we do the hardware map, but that can't be done
+     * until we say:</p>
+     * @code runOpMode(){}
+     */
     ModernRoboticsI2cRangeSensor jeep;
+    DistanceSensor wall;
     DcMotor vertical;
     DigitalChannel down;
     DigitalChannel up;
@@ -20,8 +34,8 @@ public class Mo extends OmniMode {
     Servo releaseTheHounds;
     //</editor-fold>
     //
-    static final Double closed = 0.5;
-    static final Double open = 0.1;
+    static final Double closed = 0.92;
+    static final Double open = 0.5;
     //
     public void runOpMode() {
         //
@@ -36,6 +50,7 @@ public class Mo extends OmniMode {
         latch = hardwareMap.servo.get("latch");
         releaseTheHounds = hardwareMap.servo.get("release");
         flapper = hardwareMap.servo.get("flapper");
+        wall = hardwareMap.get(DistanceSensor.class, "wall");
         //
         down.setMode(DigitalChannel.Mode.INPUT);
         up.setMode(DigitalChannel.Mode.INPUT);
@@ -47,7 +62,7 @@ public class Mo extends OmniMode {
         waitForStartify();
         //
         //<editor-fold desc="Variables">
-        Integer direction = 1;//lifter direction
+        Integer direction = 0;//lifter direction
         Double rightPower = .5;//right motor power
         Double leftPower = .5;//left motor power
         Integer front = 1;//front side of robot
@@ -136,7 +151,7 @@ public class Mo extends OmniMode {
             telemetry.addData("ready?", ready);
             telemetry.addData("front", front);
             telemetry.addData("distance", jeep.getDistance(DistanceUnit.INCH));
-            telemetry.addData("direction", -gamepad2.left_stick_y);
+            telemetry.addData("wall", wall.getDistance(DistanceUnit.INCH));
             telemetry.addData("up", up.getState());
             telemetry.addData("down", down.getState());
             telemetry.update();

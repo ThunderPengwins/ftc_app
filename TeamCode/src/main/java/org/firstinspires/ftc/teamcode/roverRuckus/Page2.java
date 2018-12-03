@@ -39,13 +39,10 @@ public class Page2 extends OmniAutoMode {
         //
         waitForStartify();
         //
-        turn(.1);
-        //
         while (opModeIsActive() && !detector.getAligned()){
             telemetry.addData("IsAligned" , detector.getAligned()); // Is the bot aligned with the gold mineral?
-            telemetry.addData("X Pos" , detector.isFound()); // Gold X position.
+            telemetry.addData("X Pos" , detector.getY()); // Gold X position.
         }
-        turn(0);
     }
     //
 }

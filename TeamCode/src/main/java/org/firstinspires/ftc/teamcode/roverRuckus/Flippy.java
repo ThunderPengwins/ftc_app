@@ -1,10 +1,11 @@
 package org.firstinspires.ftc.teamcode.roverRuckus;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @Autonomous(name = "Flippy", group = "Auto")
-
+@Disabled
 public class Flippy extends OmniAutoMode{
     public void runOpMode() {
         telInit("hardware");

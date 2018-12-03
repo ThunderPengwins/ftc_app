@@ -6,28 +6,16 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
-import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
 /**
  * Created by Pilt on 12/14/17.
@@ -58,8 +46,8 @@ public abstract class OmniAutoMode extends OmniMode{
     BNO055IMU imu;
     Orientation angles;
     Acceleration gravity;
-    DistanceSensor sideSensorDistance;
-    ModernRoboticsI2cRangeSensor frontRangesensor;
+    DistanceSensor wall;
+    ModernRoboticsI2cRangeSensor jeep;
     //
     //<editor-fold desc="Yay">
     abstract public void runOpMode();
@@ -78,6 +66,13 @@ public abstract class OmniAutoMode extends OmniMode{
     private void setSpeed(double speed){
         left.setPower(speed);
         right.setPower(speed);
+    }
+    //
+    public void fancyStops(){
+        while (likeToMoveIt() && threatened(3)){}
+        //
+        right.setPower(0);
+        left.setPower(0);
     }
     //
     public void stops(){
@@ -143,8 +138,6 @@ public abstract class OmniAutoMode extends OmniMode{
         telemetry.addData("Yaw", yaw);
         telemetry.update();
         //
-        withEncoder();
-        //
         telemetry.addData("stuff", speedDirection);
         telemetry.update();
         //
@@ -179,7 +172,7 @@ public abstract class OmniAutoMode extends OmniMode{
         Double firsta = convertify(first - 5);//175
         Double firstb = convertify(first + 5);//-175
         //
-        turn(speedDirection);//start to first position
+        turnWithEncoder(speedDirection);
         //
         if (Math.abs(firsta - firstb) < 11) {
             while (!(firsta < yaw && yaw < firstb) && opModeIsActive()) {//within range?
@@ -189,7 +182,7 @@ public abstract class OmniAutoMode extends OmniMode{
                 telemetry.addData("Position", yaw);
                 telemetry.addData("first before", first);
                 telemetry.addData("first after", convertify(first));
-//                telemetry.update();
+                telemetry.update();
             }
         }else{
             //
@@ -200,14 +193,14 @@ public abstract class OmniAutoMode extends OmniMode{
                 telemetry.addData("Position", yaw);
                 telemetry.addData("first before", first);
                 telemetry.addData("first after", convertify(first));
-//                telemetry.update();
+                telemetry.update();
             }
         }
         //
         Double seconda = convertify(second - 5);//175
         Double secondb = convertify(second + 5);//-175
         //
-        turn(speedDirection/3);//turn to second position
+        turnWithEncoder(speedDirection / 3);
         //
         if (Math.abs(seconda - secondb) < 11) {
             while (!(seconda < yaw && yaw < secondb) && opModeIsActive()) {//within range?
@@ -217,9 +210,8 @@ public abstract class OmniAutoMode extends OmniMode{
                 telemetry.addData("Position", yaw);
                 telemetry.addData("second before", second);
                 telemetry.addData("second after", convertify(second));
-//                telemetry.update();
+                telemetry.update();
             }
-        }else{
             while (!((seconda < yaw && yaw < 180) || (-180 < yaw && yaw < secondb)) && opModeIsActive()) {//within range?
                 angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                 gravity = imu.getGravity();
@@ -227,115 +219,13 @@ public abstract class OmniAutoMode extends OmniMode{
                 telemetry.addData("Position", yaw);
                 telemetry.addData("second before", second);
                 telemetry.addData("second after", convertify(second));
-//                telemetry.update();
+                telemetry.update();
             }
+            turn(0);//stop
         }
-        turn(0);//stop
         //</editor-fold>
         //
         stopAndResetify();
-        //
-    }
-    //
-    public void initVuforia(){
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
-        //Add camera monitor to RC
-        //
-        parameters.vuforiaLicenseKey = VUFORIA_KEY ;
-        parameters.cameraDirection   = CAMERA_CHOICE;
-        //Set key and choice
-        //
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-        //Start Vuforia engine
-        //
-        VuforiaTrackables targetsRoverRuckus = this.vuforia.loadTrackablesFromAsset("RoverRuckus");
-        VuforiaTrackable blueRover = targetsRoverRuckus.get(0);
-        blueRover.setName("Blue-Rover");
-        VuforiaTrackable redFootprint = targetsRoverRuckus.get(1);
-        redFootprint.setName("Red-Footprint");
-        VuforiaTrackable frontCraters = targetsRoverRuckus.get(2);
-        frontCraters.setName("Front-Craters");
-        VuforiaTrackable backSpace = targetsRoverRuckus.get(3);
-        backSpace.setName("Back-Space");
-        //Get Vuforia scans
-        //
-        List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
-        allTrackables.addAll(targetsRoverRuckus);
-        //put all trackables in a list
-        //
-        OpenGLMatrix blueRoverLocationOnField = OpenGLMatrix
-                .translation(0, mmFTCFieldWidth, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0));
-        blueRover.setLocation(blueRoverLocationOnField);
-        //position blueRover image
-        //
-        OpenGLMatrix redFootprintLocationOnField = OpenGLMatrix
-                .translation(0, -mmFTCFieldWidth, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180));
-        redFootprint.setLocation(redFootprintLocationOnField);
-        //position redFootprint image
-        //
-        OpenGLMatrix frontCratersLocationOnField = OpenGLMatrix
-                .translation(-mmFTCFieldWidth, 0, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0 , 90));
-        frontCraters.setLocation(frontCratersLocationOnField);
-        //position frontCraters image
-        //
-        OpenGLMatrix backSpaceLocationOnField = OpenGLMatrix
-                .translation(mmFTCFieldWidth, 0, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90));
-        backSpace.setLocation(backSpaceLocationOnField);
-        //position backSpace image
-        //
-        final int CAMERA_FORWARD_DISPLACEMENT  = 110;   // eg: Camera is 110 mm in front of robot center
-        final int CAMERA_VERTICAL_DISPLACEMENT = 200;   // eg: Camera is 200 mm above ground
-        final int CAMERA_LEFT_DISPLACEMENT     = 0;     // eg: Camera is ON the robot's center line
-        //
-        OpenGLMatrix phoneLocationOnRobot = OpenGLMatrix
-                .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES,
-                        CAMERA_CHOICE == FRONT ? 90 : -90, 0, 0));
-        //tell trackables where phone is
-        //
-        for (VuforiaTrackable trackable : allTrackables)
-        {
-            ((VuforiaTrackableDefaultListener)trackable.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
-        }
-    }
-    /*
-    Remember to targetsRoverRuckus.activate();
-    */
-    public void getVuforia(List<VuforiaTrackable> allTrackables){
-        targetVisible = false;
-        for (VuforiaTrackable trackable : allTrackables) {
-            if (((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible()) {
-                telemetry.addData("Visible Target", trackable.getName());
-                targetVisible = true;
-                /* getUpdatedRobotLocation() will return null if no new information is available since
-                the last time that call was made, or if the trackable is not currently visible.*/
-                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
-                if (robotLocationTransform != null) {
-                    lastLocation = robotLocationTransform;
-                }
-                break;
-            }
-            // Provide feedback as to where the robot is located (if we know).
-            if (targetVisible) {
-                // express position (translation) of robot in inches.
-                VectorF translation = lastLocation.getTranslation();
-                telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                        translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
-
-                // express the rotation of the robot in degrees.
-                Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
-                telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
-            }
-            else {
-                telemetry.addData("Visible Target", "none");
-            }
-//            telemetry.update();
-        }
     }
     //
     public double convertify(double degrees){
@@ -476,6 +366,12 @@ public abstract class OmniAutoMode extends OmniMode{
         stopAndResetify();
         //
     }
+    //
+    public boolean threatened(Integer distance){
+        if (wall.getDistance(DistanceUnit.INCH) > 3){
+            return true;
+        }else{
+            return false;
+        }
+    }
 }
-
-

@@ -3,11 +3,12 @@
 import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.SamplingOrderDetector;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
  @TeleOp(name="Order Detector", group="test")
-
+@Disabled
 public class OrderDetector extends OmniMode{
     // Detector object
     private SamplingOrderDetector detector;

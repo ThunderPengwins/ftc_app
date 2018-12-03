@@ -26,10 +26,11 @@ public abstract class Globulus extends OmniAutoMode{
     Servo flapper;
     Servo releaseTheHounds;
     //
-    static final Double closed = .5;
-    static final Double open = 0.0;
+    static final Double closed = .92;
+    static final Double open = 0.5;
     //</editor-fold>
-    public void sarker() {
+    //
+    public void beginify(){
         //
         telInit("hardware");
         //<editor-fold desc="HardwareMap">
@@ -67,32 +68,14 @@ public abstract class Globulus extends OmniAutoMode{
         //
         sleep(1000);
         //</editor-fold>
+    }
+    //
+    public Integer sarker() {
+        beginify();
         //
         waitForStartify();
         //
-        sleep(300);
-        //
-        //<editor-fold desc="DogeCV">
-        telInit("DogeCV");
-        //
-        detector = new GoldAlignDetector(); // Create detector
-        detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance()); // Initialize it with the app context and camera
-        detector.useDefaults(); // Set detector to use default setting
-        // Optional tuning
-        detector.alignSize = 100; // How wide (in pixels) is the range in which the gold object will be aligned. (Represented by green bars in the preview)
-        detector.alignPosOffset = -50; // How far from center frame to offset this alignment zone.
-        detector.downscale = 0.4; // How much to downscale the input frames
-
-        detector.areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA; // Can also be PERFECT_AREA
-        //detector.perfectAreaScorer.perfectArea = 10000; // if using PERFECT_AREA scoring
-        detector.maxAreaScorer.weight = 0.005; //
-
-        detector.ratioScorer.weight = 5; //
-        detector.ratioScorer.perfectRatio = 1.0; // Ratio adjustment
-        //
-        detector.enable(); // Start the detector!
-        //
-        //</editor-fold>
+        dogeCV();
         //
         lowerBot(2.0);
         //
@@ -101,11 +84,11 @@ public abstract class Globulus extends OmniAutoMode{
         //<editor-fold desc="Turn to Mineral">
         turnWithGyro(30, .3);
         //
-        turn(.22);
+        turnWithEncoder(.2);
         time.reset();
         //Turn towards mineral
         telMove("Looking for mineral");
-        while (!detector.getAligned() && opModeIsActive() || detector.getY() > 200) {
+        while ((!detector.getAligned() || detector.getY() > 200) && opModeIsActive() && getAngle() < 120) {
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             telemetry.addData("height", detector.getY());
             telemetry.update();
@@ -115,46 +98,49 @@ public abstract class Globulus extends OmniAutoMode{
         Integer position;
         //Check position of mineral
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        if (getAngle() < 80) {
+        if (getAngle() < 75) {
             position = -1;
-        } else if (80 <= getAngle() && getAngle() < 100) {
+        } else if (75 <= getAngle() && getAngle() < 100) {
             position = 0;
         } else {
             position = 1;
         }
         //
         telMove(position.toString());
-        sleep(1000);
         //</editor-fold>
         //Go to mineral
         //<editor-fold desc="Put Mineral in Depot">
-        telMove("forward");
-        moveToPosition(10, .3);
+        telMove("to mineral");
         //Push into depot
         if (position == -1) {
-            moveToPosition(10, .3);
+            moveToPosition(27, .5);
             telMove("turn right");
-            turnWithGyro(20, .3);
-            toPosition();
+            turnWithGyro(20, .4);
             telMove("more stuff!");
-            moveToPosition(10, .3);
+            moveToPosition(14, .5);
             //
-            turnWithGyro(55, .3);
+            turnWithGyro(55, .4);
             //
-            moveToPosition(10, .3);
+            drive(.4);
+            //
+            while (jeep.getDistance(DistanceUnit.INCH) > 10){}
+            //
+            drive(0);
         } else if (position == 1) {
-            toPosition();
-            telMove("more stuff!");
-            moveToPosition(25, -.3);
+            moveToPosition(33, .5);
             //
-            turnWithGyro(70, -.3);
+            turnWithGyro(70, -.4);
             //
-            moveToPosition(28, .3);
+            drive(.5);
+            //
+            while (jeep.getDistance(DistanceUnit.INCH) > 8){}
+            //
+            drive(0);
         } else {
-            moveToPosition(35, .2);
+            moveToPosition(45, .3);
         }
         //back away from the cube
-        moveToPosition(-2, .2);
+        moveToPosition(-2, .3);
         //</editor-fold>
         //turn towards wall
         turnWithGyro(45 + ((-position) * 35), -.3);//turn different based on position
@@ -162,9 +148,54 @@ public abstract class Globulus extends OmniAutoMode{
         releaseTheHounds.setPosition(.4);
         sleep(1000);
         //
-        turnWithGyro(45, .3);
-        moveToPosition(-10, .3);
+        return position;
+    }
+    //
+    public Integer sater(){
+        beginify();
         //
+        waitForStartify();
+        //
+        dogeCV();
+        //
+        //<editor-fold desc="Turn to Mineral">
+        lowerBot(2.0);
+        //
+        sleep(1000);
+        //
+        turnWithGyro(30, .3);
+        //
+        turn(.25);
+        time.reset();
+        //Turn towards mineral
+        telMove("Looking for mineral");
+        while ((!detector.getAligned() || detector.getY() > 200)  && opModeIsActive() && getAngle() < 160){
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            telemetry.addData("degrees", -angles.firstAngle);
+            telemetry.update();
+        }
+        turn(0);
+        Double stoptime = time.milliseconds();
+        Integer position;
+        //Check position of mineral
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        if (getAngle() < 80){
+            position = -1;
+        }else if(80 <= getAngle() && getAngle() < 100){
+            position = 0;
+        }else{
+            position = 1;
+        }
+        //
+        telemetry.addData("position", position);
+        telemetry.addData("degrees", getAngle());
+        sleep(500);
+        //</editor-fold>
+        //
+        telMove("forward");
+        moveToPosition(18, .4);
+        //
+        return position;
     }
     //
     public void lowerBot (Double power){
@@ -181,22 +212,60 @@ public abstract class Globulus extends OmniAutoMode{
     }
     //
     public void followall (Integer distance){
-        drive(.2);
+        drive(-.3);
         //
-        while (jeep.getDistance(DistanceUnit.INCH) > distance) {
+        while (jeep.getDistance(DistanceUnit.INCH) < distance) {
             if (wall.getDistance(DistanceUnit.INCH) < 5) {
                 telMove("Too close!");
-                right.setPower(right.getPower() - .01);
+                right.setPower(right.getPower() + .01);
             } else if (wall.getDistance(DistanceUnit.INCH) > 8 || wall.getDistance(DistanceUnit.INCH) == DistanceUnit.infinity) {
                 telMove("Too far!");
-                left.setPower(left.getPower() - .01);
+                left.setPower(left.getPower() + .01);
             } else {
                 telMove("Just Right");
-                drive(.2);
+                drive(-.3);
+            }
+        }
+        //
+        drive(0);
+    }
+    //
+    public void dogeCV (){
+        detector = new GoldAlignDetector(); // Create detector
+        detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance()); // Initialize it with the app context and camera
+        detector.useDefaults(); // Set detector to use default setting
+        // Optional tuning
+        detector.alignSize = 100; // How wide (in pixels) is the range in which the gold object will be aligned. (Represented by green bars in the preview)
+        detector.alignPosOffset = -200; // How far from center frame to offset this alignment zone.
+        detector.downscale = 0.4; // How much to downscale the input frames
+
+        detector.areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA; // Can also be PERFECT_AREA
+        //detector.perfectAreaScorer.perfectArea = 10000; // if using PERFECT_AREA scoring
+        detector.maxAreaScorer.weight = 0.005; //
+
+        detector.ratioScorer.weight = 5; //
+        detector.ratioScorer.perfectRatio = 1.0; // Ratio adjustment
+        //
+        detector.enable(); // Start the detector!
+        //
+    }
+    //
+    public void followGyro (Integer distance){
+        drive(-.3);
+        //
+        while (jeep.getDistance(DistanceUnit.INCH) < distance) {
+            if (getAngle() < 42) {
+                telMove("Too close!");
+                left.setPower(left.getPower() + .01);
+            } else if (getAngle() > 48) {
+                telMove("Too far!");
+                right.setPower(right.getPower() + .01);
+            } else {
+                telMove("Just Right");
+                drive(-.3);
             }
         }
         //
         drive(0);
     }
 }
-

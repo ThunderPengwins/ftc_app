@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode.roverRuckus;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous (name = "Spicy Rice", group = "test")
-public class SpicyRice extends OmniAutoMode {
+@Autonomous (name = "Spicy Thrice", group = "test")
+public class SpicyThrice extends OmniAutoMode {
     //
     public void runOpMode() {
         //
@@ -20,6 +20,11 @@ public class SpicyRice extends OmniAutoMode {
         telInit("complete");
         waitForStartify();
         //
-        turnWithGyro(90, .3);
+        for (int n = 0; n < 30; n++) {
+            turn(.3 - (n * .01));
+            telemetry.addData("Power", .3 - (n * .01));
+            telemetry.update();
+            sleep(1000);
+        }
     }
 }

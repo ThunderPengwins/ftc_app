@@ -21,6 +21,8 @@ public class FolloWall extends OmniAutoMode{
         //
         configureMotors();
         //
+        initGyro();
+        //
         withoutEncoder();
         telInit("complete");
         //
@@ -29,11 +31,11 @@ public class FolloWall extends OmniAutoMode{
         drive(.2);
         //
         while (jeep.getDistance(DistanceUnit.INCH) > 5){
-            if (wall.getDistance(DistanceUnit.INCH) < 5){
-                telMove("Too close!");
+            if (getAngle() < 40){
+                telMove(Double.toString(getAngle()));
                 right.setPower(right.getPower() - .01);
-            } else if (wall.getDistance(DistanceUnit.INCH) > 8 || wall.getDistance(DistanceUnit.INCH) == DistanceUnit.infinity){
-                telMove("Too far!");
+            } else if (getAngle() > 50){
+                telMove(Double.toString(getAngle()));
                 left.setPower(left.getPower() - .01);
             } else {
                 telMove("Just Right");

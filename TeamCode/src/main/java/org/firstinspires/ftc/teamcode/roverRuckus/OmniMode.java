@@ -36,6 +36,12 @@ public abstract class OmniMode extends LinearOpMode {
         right.setPower(-input);
     }
     //
+    public void turnWithEncoder(double input){
+        withEncoder();
+        left.setPower(input);
+        right.setPower(-input);
+    }
+    //
     public void resetEncoder(){
         left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

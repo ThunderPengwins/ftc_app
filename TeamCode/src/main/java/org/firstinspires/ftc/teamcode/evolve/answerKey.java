@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.evolve;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,6 +11,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 //Created by Eric on 6/10/2018.
 
 @TeleOp(name="answerKey",group="evolve") //Step 1, @Teleop, name & group, Okay to import
+@Disabled
 public class answerKey extends LinearOpMode{ //Step 2, extends..., light bulb>make abstract
     //
     DcMotor left;
