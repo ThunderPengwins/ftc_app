@@ -52,7 +52,7 @@ public abstract class OmniAutoMode extends OmniMode{
     //<editor-fold desc="Yay">
     abstract public void runOpMode();
     //
-    static final double countify = 88;
+    static final double countify = 88;//41.5
     //</editor-fold>
     //
     //<editor-fold desc="Extraneous">
@@ -76,7 +76,11 @@ public abstract class OmniAutoMode extends OmniMode{
     }
     //
     public void stops(){
-        while (likeToMoveIt()){}
+        while (likeToMoveIt()){
+            telemetry.addData("left", left.getCurrentPosition());
+            telemetry.addData("right", right.getCurrentPosition());
+            telemetry.update();
+        }
         //
         right.setPower(0);
         left.setPower(0);
