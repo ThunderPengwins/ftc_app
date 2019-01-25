@@ -198,6 +198,58 @@ public abstract class Globulus extends OmniAutoMode{
         return position;
     }
     //
+    public void tarker(){
+        beginify();
+        //
+        waitForStartify();
+        //
+        dogeCV();
+        //
+        lowerBot(2.0);
+        //
+        sleep(1000);
+        //
+        //<editor-fold desc="Turn to Mineral">
+        turnWithGyro(30, .3);
+        //
+        turnWithEncoder(.2);
+        time.reset();
+        //Turn towards mineral
+        telMove("Looking for mineral");
+        while ((!detector.getAligned() || detector.getY() > 200) && opModeIsActive() && getAngle() < 120) {
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            telemetry.addData("height", detector.getY());
+            telemetry.update();
+        }
+        turn(0);
+        Double stoptime = time.milliseconds();
+        Integer position;
+        //Check position of mineral
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        if (getAngle() < 75) {
+            position = -1;
+        } else if (75 <= getAngle() && getAngle() < 100) {
+            position = 0;
+        } else {
+            position = 1;
+        }
+        //</editor-fold>
+        //
+        //<editor-fold desc="Put Mineral in Depot">
+        telMove("to mineral");
+        //Push into depot
+        if (position == -1) {
+            //
+        } else if (position == 1) {
+            //
+        } else {
+            //
+        }
+        //back away from the cube
+        moveToPosition(-2, .3);
+        //</editor-fold>
+    }
+    //
     public void lowerBot (Double power){
         //
         vertical.setPower(power);
@@ -267,5 +319,97 @@ public abstract class Globulus extends OmniAutoMode{
         }
         //
         drive(0);
+    }
+    //
+    public void turveLeftByPoint(Double x, Double y, Double clearance, Double speed){
+        //
+        Double width = (Math.hypot(x, y));
+        Double radius = (clearance / 2) + (Math.pow(width, 2) / (8 * clearance));
+        telemetry.addData("width", width);
+        telemetry.addData("radius", radius);
+        telemetry.update();
+        //
+        sleep(1000);
+        //
+        Double leftMotor = 2 * Math.PI * radius * ((2 * Math.toDegrees(Math.asin((width / 2) / radius))) / 360);
+        Double rightMotor = 2 * Math.PI * (radius + 16) * ((2 * Math.toDegrees(Math.asin((width / 2) / radius))) / 360);
+        //
+        int rightd = (int)(Math.round(rightMotor * countify));
+        int leftd = (int)(Math.round(leftMotor * countify));
+        //
+        telemetry.addData("left motor", leftMotor + ", " + leftd);
+        telemetry.addData("right motor", rightMotor + ", " + rightd);
+        telemetry.update();
+        //[
+        sleep(1000);
+        //
+        left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //
+        left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //
+        right.setTargetPosition(right.getCurrentPosition() + rightd);
+        left.setTargetPosition(left.getCurrentPosition() + leftd);
+        //
+        right.setPower(speed);
+        left.setPower((leftMotor / rightMotor) * speed);
+        //
+        while (right.isBusy()){
+            telemetry.addData("left motor", leftMotor);
+            telemetry.addData("right motor", rightMotor);
+            telemetry.addData("left power", ((leftMotor / rightMotor) * .4) + ", reality: " + left.getPower());
+            telemetry.addData("right power", .4 + ", reality: " + right.getPower());
+            telemetry.update();
+        }
+        //
+        right.setPower(0);
+        left.setPower(0);
+        //
+    }
+    //
+    public void turveRightByPoint(Double x, Double y, Double clearance, Double speed){
+        //
+        Double width = (Math.hypot(x, y));
+        Double radius = (clearance / 2) + (Math.pow(width, 2) / (8 * clearance));
+        telemetry.addData("width", width);
+        telemetry.addData("radius", radius);
+        telemetry.update();
+        //
+        sleep(1000);
+        //
+        Double rightMotor = 2 * Math.PI * radius * ((2 * Math.toDegrees(Math.asin((width / 2) / radius))) / 360);
+        Double leftMotor = 2 * Math.PI * (radius + 16) * ((2 * Math.toDegrees(Math.asin((width / 2) / radius))) / 360);
+        //
+        int rightd = (int)(Math.round(rightMotor * countify));
+        int leftd = (int)(Math.round(leftMotor * countify));
+        //
+        telemetry.addData("left motor", leftMotor + ", " + leftd);
+        telemetry.addData("right motor", rightMotor + ", " + rightd);
+        telemetry.update();
+        //[
+        sleep(1000);
+        //
+        left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //
+        left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //
+        right.setTargetPosition(right.getCurrentPosition() + rightd);
+        left.setTargetPosition(left.getCurrentPosition() + leftd);
+        //
+        left.setPower(speed);
+        right.setPower((rightMotor / leftMotor) * speed);
+        //
+        while (right.isBusy()){
+            telemetry.addData("left motor", leftMotor);
+            telemetry.addData("right motor", rightMotor);
+            telemetry.update();
+        }
+        //
+        right.setPower(0);
+        left.setPower(0);
+        //
     }
 }

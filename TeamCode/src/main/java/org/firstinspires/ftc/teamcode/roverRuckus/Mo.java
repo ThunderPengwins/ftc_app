@@ -34,8 +34,8 @@ public class Mo extends OmniMode {
     Servo releaseTheHounds;
     //</editor-fold>
     //
-    static final Double closed = 0.92;
-    static final Double open = 0.5;
+    static final Double closed = 0.7;
+    static final Double open = 0.45;
     //
     public void runOpMode() {
         //
@@ -105,7 +105,7 @@ public class Mo extends OmniMode {
             //
             //<editor-fold desc="Lifter">
             if (!((up.getState() && direction == 1) || (down.getState() && direction == -1)) && !(gamepad2.right_trigger > 0) && !(direction == 0)) {
-                vertical.setPower(0.5 * direction);
+                vertical.setPower(direction);
             } else {
                 vertical.setPower(0);
                 direction = 0;

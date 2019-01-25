@@ -123,8 +123,8 @@ public class ArmyTest extends OmniMode {
          */
         List<Double> pnl = new ArrayList<>();
         //
-        double cb = Math.toDegrees(Math.atan(y / x)) + Math.toDegrees(Math.acos((Math.pow(pr1len, 2) + (Math.pow(x, 2) + Math.pow(y, 2)) - Math.pow(lielen, 2)) / (2 * pr1len * Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)))));
-        double db = Math.toDegrees(Math.asin(Math.sin(Math.acos((Math.pow(pr1len, 2) + (Math.pow(x, 2) + Math.pow(y, 2)) - Math.pow(lielen, 2)) / (2 * pr1len * Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))))) * Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) / lielen));
+        double cb = Math.toDegrees(Math.atan(y / x)) + Math.toDegrees(Math.acos((Math.pow(pr1len, 2) + (Math.pow(x, 2) + Math.pow(y, 2)) - Math.pow(lielen, 2)) / (2 * pr1len * Math.hypot(x, y))));
+        double db = Math.toDegrees(Math.asin(Math.sin(Math.acos((Math.pow(pr1len, 2) + (Math.pow(x, 2) + Math.pow(y, 2)) - Math.pow(lielen, 2)) / (2 * pr1len * Math.hypot(x, y)))) * Math.hypot(x, y) / lielen));
         //IF(G7-90>-1,G7-90,G7+270)
         if (db - 90 > -1){
             db = db - 90;
