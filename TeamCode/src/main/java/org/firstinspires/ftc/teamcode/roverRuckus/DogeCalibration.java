@@ -6,10 +6,15 @@ import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.internal.collections.SimpleGson;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 @Autonomous(name = "Doge Calibration", group = "real")
 public class DogeCalibration extends Globulus {
@@ -38,6 +43,8 @@ public class DogeCalibration extends Globulus {
         detector.alignSize = 100; // How wide (in pixels) is the range in which the gold object will be aligned. (Represented by green bars in the preview)
         detector.alignPosOffset = -50; // How far from center frame to offset this alignment zone.
         detector.downscale = 0.4; // How much to downscale the input frames
+        detector.constrainPosOffset = 200;
+        detector.constrainSize = 100;
 
         detector.areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA; // Can also be PERFECT_AREA
         //detector.perfectAreaScorer.perfectArea = 10000; // if using PERFECT_AREA scoring
@@ -48,7 +55,7 @@ public class DogeCalibration extends Globulus {
         //
         detector.enable(); // Start the detector!
         //
-        /*lowerBot(1.0);
+        lowerBot(2.0);
         //
         turnWithGyro(30, .3);
         //
@@ -56,28 +63,63 @@ public class DogeCalibration extends Globulus {
         time.reset();
         //Turn towards mineral
         telMove("Looking for mineral");
-        while ((!detector.getAligned() || detector.getY() > 200) && opModeIsActive() && getAngle() < 120) {
+        while ((!detector.getConstrained()) && opModeIsActive() && getAngle() < 120) {
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             telemetry.addData("height", detector.getY());
             telemetry.update();
         }
         turn(0);
         //
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        //
         double difference = getAngle() - target;
         //
-        double change = difference * pxperdg;*/
-        //
-
+        double change = difference * pxperdg;
         //
         String filename = "DogeCalibration.json";
         File file = AppUtil.getInstance().getSettingsFile(filename);
-        ReadWriteFile.writeFile(file, serialize(Double.toString(detector.getY())));
+        //
+        telemetry.addData("returns", change);
+        telemetry.update();
+        //
+        ReadWriteFile.writeFile(file, serialize(Double.toString(change)));
+        //
+        sleep(50000);
     }
     //
     public String serialize(String input) {
         return SimpleGson.getInstance().toJson(input);
     }
     //
-    /*public String deserialize(String data) {
-        return SimpleGson.getInstance().fromJson(data,json);}*/
+    public String deserialize(String data) {
+        return SimpleGson.getInstance().fromJson(data, String.class);
+        //return new ObjectMapper().readValue(json, ClipData.Item.class);
+    }
+    //
+    public String trim (String input){
+        String result;
+        //
+        char[] chars = input.toCharArray();
+        //
+        List<Character> characters = new ArrayList<>();
+        //
+        for (Character a : chars){
+            characters.add(a);
+        }
+        //
+        characters.remove(0);
+        characters.remove(characters.size() - 1);
+        //
+        Character[] newone = characters.toArray(new Character[0]);
+        //
+        StringBuilder sb = new StringBuilder();
+        //
+        for (Character a : newone){
+            sb.append(a);
+        }
+        //
+        result = sb.toString();
+        //
+        return result;
+    }
 }

@@ -4,6 +4,13 @@ import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.util.ReadWriteFile;
+
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 //an ominous autonomous
 
@@ -39,10 +46,42 @@ public class Page2 extends OmniAutoMode {
         //
         waitForStartify();
         //
+        String filename = "DogeCalibration.json";
+        File file = AppUtil.getInstance().getSettingsFile(filename);
+        String use = ReadWriteFile.readFile(file);
+        //
         while (opModeIsActive() && !detector.getAligned()){
             telemetry.addData("IsAligned" , detector.getAligned()); // Is the bot aligned with the gold mineral?
             telemetry.addData("X Pos" , detector.getY()); // Gold X position.
+            telemetry.addData("read", use);
+            telemetry.update();
         }
     }
     //
+    public String trim (String input){
+        String result;
+        //
+        char[] chars = input.toCharArray();
+        //
+        List<Character> characters = new ArrayList<>();
+        //
+        for (Character a : chars){
+            characters.add(a);
+        }
+        //
+        characters.remove(0);
+        characters.remove(characters.size() - 1);
+        //
+        Character[] newone = characters.toArray(new Character[0]);
+        //
+        StringBuilder sb = new StringBuilder();
+        //
+        for (Character a : newone){
+            sb.append(a);
+        }
+        //
+        result = sb.toString();
+        //
+        return result;
+    }
 }

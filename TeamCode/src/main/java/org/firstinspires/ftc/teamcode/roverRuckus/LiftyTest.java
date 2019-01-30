@@ -24,7 +24,7 @@ public class LiftyTest extends OmniMode {
     public void runOpMode() {
         //
         //<editor-fold desc="HardwareMap">
-        vertical = hardwareMap.dcMotor.get("vertical");//change in phones
+        vertical = hardwareMap.dcMotor.get("verticala");//change in phones
         down = hardwareMap.get(DigitalChannel.class, "down");
         up = hardwareMap.get(DigitalChannel.class, "up");
         latch = hardwareMap.servo.get("latch");

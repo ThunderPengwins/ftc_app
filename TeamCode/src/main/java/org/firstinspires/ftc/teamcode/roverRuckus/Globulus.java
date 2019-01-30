@@ -5,6 +5,7 @@ import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -19,15 +20,17 @@ public abstract class Globulus extends OmniAutoMode{
     private GoldAlignDetector detector;
     ModernRoboticsI2cRangeSensor jeep;
     DistanceSensor wall;
-    DcMotor vertical;
+    DcMotor verticala;
+    DcMotor verticalb;
     DigitalChannel down;
     DigitalChannel up;
     Servo latch;
     Servo flapper;
     Servo releaseTheHounds;
     //
-    static final Double closed = .92;
-    static final Double open = 0.5;
+    static final Double open = .7;
+    static final Double closed = 0.45;
+    static final Integer calibrationInput = -50;
     //</editor-fold>
     //
     public void beginify(){
@@ -38,7 +41,8 @@ public abstract class Globulus extends OmniAutoMode{
         right = hardwareMap.dcMotor.get("right");
         jeep = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "jeep");
         wall = hardwareMap.get(DistanceSensor.class, "wall");
-        vertical = hardwareMap.dcMotor.get("vertical");//change in phones
+        verticala = hardwareMap.dcMotor.get("verticala");//change in phones
+        verticalb = hardwareMap.dcMotor.get("verticalb");//change in phones
         down = hardwareMap.get(DigitalChannel.class, "down");
         up = hardwareMap.get(DigitalChannel.class, "up");
         latch = hardwareMap.servo.get("latch");
@@ -50,8 +54,12 @@ public abstract class Globulus extends OmniAutoMode{
         down.setMode(DigitalChannel.Mode.INPUT);
         up.setMode(DigitalChannel.Mode.INPUT);
         //
-        vertical.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        vertical.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        verticala.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        verticalb.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        verticala.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        verticalb.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        verticala.setDirection(DcMotorSimple.Direction.REVERSE);
+        verticalb.setDirection(DcMotorSimple.Direction.REVERSE);
         //
         configureMotors();
         //</editor-fold>
@@ -63,6 +71,49 @@ public abstract class Globulus extends OmniAutoMode{
         telInit("Servos");
         releaseTheHounds.setPosition(0);
         flapper.setPosition(0);
+        //
+        telInit("complete");
+        //
+        sleep(1000);
+        //</editor-fold>
+    }
+    //
+    public void newbeginify(){
+        //
+        telInit("hardware");
+        //<editor-fold desc="HardwareMap">
+        left = hardwareMap.dcMotor.get("left");
+        right = hardwareMap.dcMotor.get("right");
+        jeep = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "jeep");
+        wall = hardwareMap.get(DistanceSensor.class, "wall");
+        verticala = hardwareMap.dcMotor.get("verticala");//change in phones
+        verticalb = hardwareMap.dcMotor.get("verticalb");//change in phones
+        down = hardwareMap.get(DigitalChannel.class, "down");
+        up = hardwareMap.get(DigitalChannel.class, "up");
+        latch = hardwareMap.servo.get("latch");
+        releaseTheHounds = hardwareMap.servo.get("release");
+        //</editor-fold>
+        //
+        //<editor-fold desc="Configure Motors">
+        down.setMode(DigitalChannel.Mode.INPUT);
+        up.setMode(DigitalChannel.Mode.INPUT);
+        //
+        verticala.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        verticalb.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        verticala.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        verticalb.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        verticala.setDirection(DcMotorSimple.Direction.REVERSE);
+        verticalb.setDirection(DcMotorSimple.Direction.REVERSE);
+        //
+        configureMotors();
+        //</editor-fold>
+        //
+        //<editor-fold desc="Gyro and Servos">
+        telInit("gyro");
+        initGyro();
+        //
+        telInit("Servos");
+        releaseTheHounds.setPosition(0);
         //
         telInit("complete");
         //
@@ -199,7 +250,8 @@ public abstract class Globulus extends OmniAutoMode{
     }
     //
     public void tarker(){
-        beginify();
+        //<editor-fold desc="The beginning stuff">
+        newbeginify();
         //
         waitForStartify();
         //
@@ -208,6 +260,7 @@ public abstract class Globulus extends OmniAutoMode{
         lowerBot(2.0);
         //
         sleep(1000);
+        //</editor-fold>
         //
         //<editor-fold desc="Turn to Mineral">
         turnWithGyro(30, .3);
@@ -216,7 +269,7 @@ public abstract class Globulus extends OmniAutoMode{
         time.reset();
         //Turn towards mineral
         telMove("Looking for mineral");
-        while ((!detector.getAligned() || detector.getY() > 200) && opModeIsActive() && getAngle() < 120) {
+        while ((!detector.getConstrained()) && opModeIsActive() && getAngle() < 120) {
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             telemetry.addData("height", detector.getY());
             telemetry.update();
@@ -240,28 +293,32 @@ public abstract class Globulus extends OmniAutoMode{
         //Push into depot
         if (position == -1) {
             //
+            moveToPosition(20, .5);
+            turveRightByPoint(0.0, 25.0, 20.0, .8);
+            //
         } else if (position == 1) {
             //
         } else {
             //
         }
-        //back away from the cube
-        moveToPosition(-2, .3);
         //</editor-fold>
     }
     //
     public void lowerBot (Double power){
         //
-        vertical.setPower(power);
+        verticala.setPower(power);
+        verticalb.setPower(power);
         //
         while (!up.getState()) {
             telemetry.addData("up", up.getState());
             telemetry.update();
         }
         //
-        vertical.setPower(0);
+        verticala.setPower(0);
+        verticalb.setPower(0);
+        //
         latch.setPosition(open);
-    }
+        }
     //
     public void followall (Integer distance){
         drive(-.3);
@@ -288,9 +345,12 @@ public abstract class Globulus extends OmniAutoMode{
         detector.useDefaults(); // Set detector to use default setting
         // Optional tuning
         detector.alignSize = 100; // How wide (in pixels) is the range in which the gold object will be aligned. (Represented by green bars in the preview)
-        detector.alignPosOffset = -200; // How far from center frame to offset this alignment zone.
+        Integer compound = -200 + calibrationInput;
+        detector.alignPosOffset = compound; // How far from center frame to offset this alignment zone.
         detector.downscale = 0.4; // How much to downscale the input frames
-
+        detector.constrainPosOffset = 150;
+        detector.constrainSize = 100;
+        //
         detector.areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA; // Can also be PERFECT_AREA
         //detector.perfectAreaScorer.perfectArea = 10000; // if using PERFECT_AREA scoring
         detector.maxAreaScorer.weight = 0.005; //
@@ -376,8 +436,6 @@ public abstract class Globulus extends OmniAutoMode{
         telemetry.addData("radius", radius);
         telemetry.update();
         //
-        sleep(1000);
-        //
         Double rightMotor = 2 * Math.PI * radius * ((2 * Math.toDegrees(Math.asin((width / 2) / radius))) / 360);
         Double leftMotor = 2 * Math.PI * (radius + 16) * ((2 * Math.toDegrees(Math.asin((width / 2) / radius))) / 360);
         //
@@ -387,8 +445,6 @@ public abstract class Globulus extends OmniAutoMode{
         telemetry.addData("left motor", leftMotor + ", " + leftd);
         telemetry.addData("right motor", rightMotor + ", " + rightd);
         telemetry.update();
-        //[
-        sleep(1000);
         //
         left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

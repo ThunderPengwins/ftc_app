@@ -32,8 +32,8 @@ public class Moby extends OmniMode {
     Servo latch;
     //</editor-fold>
     //
-    static final Double closed = 0.92;
-    static final Double open = 0.5;
+    static final Double open = 0.7;
+    static final Double closed = 0.45;
     //
     public void runOpMode() {
         //
@@ -55,6 +55,7 @@ public class Moby extends OmniMode {
         verticalb.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         verticala.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         verticalb.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        verticala.setDirection(DcMotorSimple.Direction.REVERSE);
         verticalb.setDirection(DcMotorSimple.Direction.REVERSE);
         //</editor-fold>
         //
@@ -121,9 +122,9 @@ public class Moby extends OmniMode {
             //
             //<editor-fold desc="Latch">
             if (gamepad2.a) {
-                latch.setPosition(open);
-            } else if (gamepad2.b) {
                 latch.setPosition(closed);
+            } else if (gamepad2.b) {
+                latch.setPosition(open);
             }
             //</editor-fold>
             //

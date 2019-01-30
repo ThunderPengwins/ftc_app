@@ -44,7 +44,7 @@ public class Mo extends OmniMode {
         left = hardwareMap.dcMotor.get("left");
         right = hardwareMap.dcMotor.get("right");
         jeep = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "jeep");
-        vertical = hardwareMap.dcMotor.get("vertical");//change in phones
+        vertical = hardwareMap.dcMotor.get("verticala");//change in phones
         down = hardwareMap.get(DigitalChannel.class, "down");
         up = hardwareMap.get(DigitalChannel.class, "up");
         latch = hardwareMap.servo.get("latch");

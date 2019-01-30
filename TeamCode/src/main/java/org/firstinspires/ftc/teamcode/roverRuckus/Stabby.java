@@ -17,13 +17,13 @@ public class Stabby extends OmniMode {
     DigitalChannel stabbyUp;
     DigitalChannel stabbyDown;
     Servo latch;
-//    DcMotor vertical;
+//    DcMotor verticala;
 
 
     public void runOpMode(){
 
         telInit("hardware");
-        sirStabby = hardwareMap.dcMotor.get("vertical");
+        sirStabby = hardwareMap.dcMotor.get("verticala");
         sabbiesClaw = hardwareMap.servo.get("latch");
         stabbyDown = hardwareMap.get(DigitalChannel.class, "down");
         stabbyUp = hardwareMap.get(DigitalChannel.class, "up");
