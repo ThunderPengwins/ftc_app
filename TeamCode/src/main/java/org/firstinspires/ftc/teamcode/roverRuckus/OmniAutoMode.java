@@ -378,4 +378,23 @@ public abstract class OmniAutoMode extends OmniMode{
             return false;
         }
     }
+
+    public void inchesMoved(){
+    }
+
+    public void wallFollower(int wallInches, int movingRoations){
+       while(movingRoations<(movingRoations+1)){
+           if (wallInches <= jeep.getDistance(DistanceUnit.INCH)) {
+               turnWithGyro(40, 0.5);
+               drive(0.75);
+           }
+           else if (wallInches >= jeep.getDistance(DistanceUnit.INCH)) {
+               turnWithGyro(-40, 0.5);
+               drive(0.75);
+           }
+           movingRoations++;
+           telemetry.addData("Wall Inches", jeep.getDistance(DistanceUnit.INCH));
+           telemetry.update();
+       }
+    }
 }
