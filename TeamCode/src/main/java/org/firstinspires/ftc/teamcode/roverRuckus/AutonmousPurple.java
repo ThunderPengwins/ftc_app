@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.roverRuckus;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -15,7 +14,7 @@ public class AutonmousPurple extends OmniAutoMode{
         telInit("hardware");
         left = hardwareMap.dcMotor.get("left");
         right = hardwareMap.dcMotor.get("right");
-        wall = hardwareMap.get(DistanceSensor.class, "wall");
+        wall = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "wall");
         jeep = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "jeep");
         initGyro();
         configureMotors();

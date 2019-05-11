@@ -12,7 +12,7 @@ public abstract class OmniMode extends LinearOpMode {
     DcMotor right;
     //
     public void configureMotors(){//remember to switch this back
-        right.setDirection(DcMotorSimple.Direction.REVERSE);
+        left.setDirection(DcMotorSimple.Direction.REVERSE);
     }
     //
     public boolean likeToMoveIt(){
@@ -40,6 +40,18 @@ public abstract class OmniMode extends LinearOpMode {
         withEncoder();
         left.setPower(input);
         right.setPower(-input);
+    }
+    //
+    public void shimmyWithEncoder(double input, int motor){
+        withEncoder();
+        //
+        if (motor == 0) {
+            left.setPower(input);
+            right.setPower(input / 3);
+        }else {
+            right.setPower(input);
+            left.setPower(input / 3);
+        }
     }
     //
     public void resetEncoder(){

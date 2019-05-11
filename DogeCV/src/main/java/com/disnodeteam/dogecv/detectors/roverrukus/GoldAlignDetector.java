@@ -135,7 +135,7 @@ public class GoldAlignDetector extends DogeCVDetector {
                 aligned = false;
             }
 
-            if(yPos < constrainYMax && yPos < constrainYMin){
+            if(yPos < constrainYMax && yPos > constrainYMin){
                 constrained = true;
             }else{
                 constrained = false;

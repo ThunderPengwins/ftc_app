@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.roverRuckus;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -14,6 +13,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
@@ -40,14 +42,37 @@ public abstract class OmniAutoMode extends OmniMode{
     private OpenGLMatrix lastLocation = null;
     private boolean targetVisible = false;
     //
+    static final List<Double> voltage = new ArrayList<Double>(){{
+        add(-.002);
+        add(.139);
+        add(.279);
+        add(.401);
+        add(.515);
+        add(.643);
+        add(.743);
+        add(.875);
+        add(1.006);
+        add(1.125);
+        add(1.302);
+        add(1.512);
+        add(1.616);
+        add(1.87);
+        add(2.118);
+        add(2.423);
+        add(2.794);
+        add(3.311);
+        add(3.334);
+    }};
+    //
     VuforiaLocalizer vuforia;
     //</editor-fold>
     //
     BNO055IMU imu;
     Orientation angles;
     Acceleration gravity;
-    DistanceSensor wall;
     ModernRoboticsI2cRangeSensor jeep;
+    ModernRoboticsI2cRangeSensor wall;
+    ModernRoboticsI2cRangeSensor leftwall;
     //
     //<editor-fold desc="Yay">
     abstract public void runOpMode();
@@ -205,6 +230,104 @@ public abstract class OmniAutoMode extends OmniMode{
         Double secondb = convertify(second + 5);//-175
         //
         turnWithEncoder(speedDirection / 3);
+        //
+        if (Math.abs(seconda - secondb) < 11) {
+            while (!(seconda < yaw && yaw < secondb) && opModeIsActive()) {//within range?
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                gravity = imu.getGravity();
+                yaw = -angles.firstAngle;
+                telemetry.addData("Position", yaw);
+                telemetry.addData("second before", second);
+                telemetry.addData("second after", convertify(second));
+                telemetry.update();
+            }
+            while (!((seconda < yaw && yaw < 180) || (-180 < yaw && yaw < secondb)) && opModeIsActive()) {//within range?
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                gravity = imu.getGravity();
+                yaw = -angles.firstAngle;
+                telemetry.addData("Position", yaw);
+                telemetry.addData("second before", second);
+                telemetry.addData("second after", convertify(second));
+                telemetry.update();
+            }
+            turn(0);//stop
+        }
+        //</editor-fold>
+        //
+        stopAndResetify();
+    }
+    //
+    public void shimmyWithGyro(double degrees, double speedDirection, int motor){
+        //<editor-fold desc="Initialize">
+        angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double yaw = -angles.firstAngle;//make this negative
+        telemetry.addData("Speed Direction", speedDirection);
+        telemetry.addData("Yaw", yaw);
+        telemetry.update();
+        //
+        telemetry.addData("stuff", speedDirection);
+        telemetry.update();
+        //
+        double first;
+        double second;
+        //</editor-fold>
+        //
+        if (speedDirection > 0){//set target positions
+            //<editor-fold desc="turn right">
+            if (degrees > 10){
+                first = (degrees - 10) + devertify(yaw);
+                second = degrees + devertify(yaw);
+            }else{
+                first = devertify(yaw);
+                second = degrees + devertify(yaw);
+            }
+            //</editor-fold>
+        }else{
+            //<editor-fold desc="turn left">
+            if (degrees > 10){
+                first = devertify(-(degrees - 10) + devertify(yaw));
+                second = devertify(-degrees + devertify(yaw));
+            }else{
+                first = devertify(yaw);
+                second = devertify(-degrees + devertify(yaw));
+            }
+            //
+            //</editor-fold>
+        }
+        //
+        //<editor-fold desc="Go to position">
+        Double firsta = convertify(first - 5);//175
+        Double firstb = convertify(first + 5);//-175
+        //
+        shimmyWithEncoder(speedDirection, motor);
+        //
+        if (Math.abs(firsta - firstb) < 11) {
+            while (!(firsta < yaw && yaw < firstb) && opModeIsActive()) {//within range?
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                gravity = imu.getGravity();
+                yaw = -angles.firstAngle;
+                telemetry.addData("Position", yaw);
+                telemetry.addData("first before", first);
+                telemetry.addData("first after", convertify(first));
+                telemetry.update();
+            }
+        }else{
+            //
+            while (!((firsta < yaw && yaw < 180) || (-180 < yaw && yaw < firstb)) && opModeIsActive()) {//within range?
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                gravity = imu.getGravity();
+                yaw = -angles.firstAngle;
+                telemetry.addData("Position", yaw);
+                telemetry.addData("first before", first);
+                telemetry.addData("first after", convertify(first));
+                telemetry.update();
+            }
+        }
+        //
+        Double seconda = convertify(second - 5);//175
+        Double secondb = convertify(second + 5);//-175
+        //
+        shimmyWithEncoder(speedDirection / 3, motor);
         //
         if (Math.abs(seconda - secondb) < 11) {
             while (!(seconda < yaw && yaw < secondb) && opModeIsActive()) {//within range?
@@ -396,5 +519,66 @@ public abstract class OmniAutoMode extends OmniMode{
            telemetry.addData("Wall Inches", jeep.getDistance(DistanceUnit.INCH));
            telemetry.update();
        }
+    }
+    //
+    public void fwright(double inches, double speed, double wallDistance){
+        toPosition();
+        //
+        int move = (int)(Math.round(inches*countify));
+        //
+        left.setTargetPosition(left.getCurrentPosition() + move);
+        right.setTargetPosition(right.getCurrentPosition() + move);
+        //
+        setSpeed(speed);
+        //
+        while (likeToMoveIt()){
+            if (wall.getDistance(DistanceUnit.INCH) < wallDistance - 2){
+                left.setPower((left.getPower()) - (.05));
+                right.setPower(speed);
+            }else if (wall.getDistance(DistanceUnit.INCH) > wallDistance + 2){
+                right.setPower((right.getPower()) - (.05));
+                left.setPower(speed);
+            }else{
+                left.setPower(speed);
+                right.setPower(speed);
+            }
+        }
+        //
+        setSpeed(0);
+    }
+    //
+    public void fwbackright(double inches, double speed, double wallDistance){
+        toPosition();
+        //
+        int move = (int)(Math.round(inches*countify));
+        //
+        left.setTargetPosition(left.getCurrentPosition() + move);
+        right.setTargetPosition(right.getCurrentPosition() + move);
+        //
+        setSpeed(speed);
+        //
+        while (likeToMoveIt()){
+            if (withinRange(leftwall.getDistance(DistanceUnit.INCH), leftwall.getDistance(DistanceUnit.INCH), 0)){
+                left.setPower(speed);
+                right.setPower(speed);
+            }else if (leftwall.getDistance(DistanceUnit.INCH) < wall.getDistance(DistanceUnit.INCH)){
+                left.setPower((left.getPower()) - (.05));
+                right.setPower(speed);
+            }else{
+                right.setPower((right.getPower()) - (.05));
+                left.setPower(speed);
+            }
+        }
+        //
+        setSpeed(0);
+        //
+    }
+    //
+    public boolean withinRange (double input, double target, double error){
+        if (input > target - error && input < target + error){
+            return true;
+        }else{
+            return false;
+        }
     }
 }
