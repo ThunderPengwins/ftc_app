@@ -20,6 +20,8 @@ public class answerKey extends LinearOpMode{ //Step 2, extends..., light bulb>ma
     //
     public void runOpMode() throws InterruptedException { //Step 4, runOpMode
         //
+        boolean fullpower = false;
+        //
         left = hardwareMap.dcMotor.get("left");
         right = hardwareMap.dcMotor.get("right");
         wall = hardwareMap.touchSensor.get("wall");
@@ -31,9 +33,20 @@ public class answerKey extends LinearOpMode{ //Step 2, extends..., light bulb>ma
         //
         while (opModeIsActive()){
             //
+            if (gamepad1.dpad_up){
+                fullpower = true;
+            }else if (gamepad1.dpad_down){
+                fullpower = false;
+            }
+            //
             if (!((-gamepad1.left_stick_y > 0 || -gamepad1.right_stick_y > 0) && wall.isPressed())) {
-                left.setPower(-gamepad1.right_stick_y * .5);
-                right.setPower(-gamepad1.left_stick_y * .5);
+                if (fullpower) {
+                    left.setPower(-gamepad1.right_stick_y );
+                    right.setPower(-gamepad1.left_stick_y);
+                } else{
+                    left.setPower(-gamepad1.right_stick_y * .5);
+                    right.setPower(-gamepad1.left_stick_y * .5);
+                }
             }else{
                 left.setPower(0);
                 right.setPower(0);

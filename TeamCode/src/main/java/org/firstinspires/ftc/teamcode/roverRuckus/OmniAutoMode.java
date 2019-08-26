@@ -177,7 +177,7 @@ public abstract class OmniAutoMode extends OmniMode{
         if (speedDirection > 0){//set target positions
             //<editor-fold desc="turn right">
             if (degrees > 10){
-                first = (degrees - 10) + devertify(yaw);
+                first = (degrees - 10) + devertify(yaw);//To 0 to 360
                 second = degrees + devertify(yaw);
             }else{
                 first = devertify(yaw);
@@ -198,7 +198,7 @@ public abstract class OmniAutoMode extends OmniMode{
         }
         //
         //<editor-fold desc="Go to position">
-        Double firsta = convertify(first - 5);//175
+        Double firsta = convertify(first - 5);//175    To -180 t0 180
         Double firstb = convertify(first + 5);//-175
         //
         turnWithEncoder(speedDirection);

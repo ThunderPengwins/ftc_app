@@ -13,11 +13,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@Autonomous(name="Encoder Test", group="chad")
-public class EncoderTest extends LinearOpMode {
+@Autonomous(name="Traction Test", group="chad")
+public class TractionTest extends LinearOpMode {
     //
-    DcMotor left;
-    DcMotor right;
+    DcMotor frontleft;
+    DcMotor frontright;
+    DcMotor backleft;
+    DcMotor backright;
     //28 * 20 / (2ppi * 4.125)
     Double width = 15.0; //inches
     Integer cpr = 28; //counts per rotation
@@ -38,9 +40,12 @@ public class EncoderTest extends LinearOpMode {
         //
         initGyro();
         //
-        left = hardwareMap.dcMotor.get("left");
-        right = hardwareMap.dcMotor.get("right");
-        right.setDirection(DcMotorSimple.Direction.REVERSE);//If your robot goes backward, switch this from right to left
+        frontleft = hardwareMap.dcMotor.get("frontleft");
+        frontright = hardwareMap.dcMotor.get("frontright");
+        backleft = hardwareMap.dcMotor.get("backleft");
+        backright = hardwareMap.dcMotor.get("backright");
+        frontright.setDirection(DcMotorSimple.Direction.REVERSE);//If your robot goes backward, switch this from right to left
+        backright.setDirection(DcMotorSimple.Direction.REVERSE);//If your robot goes backward, switch this from right to left
         //
         waitForStartify();
         //
@@ -53,43 +58,63 @@ public class EncoderTest extends LinearOpMode {
     To drive backward, simply make the inches input negative.
      */
     public void moveToPosition(double inches, double speed){
-        left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontleft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontright.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backleft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backright.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         //
         if (inches < 5) {
             int move = (int) (Math.round(inches * conversion));
             //
-            left.setTargetPosition(left.getCurrentPosition() + move);
-            right.setTargetPosition(right.getCurrentPosition() + move);
+            frontleft.setTargetPosition(frontleft.getCurrentPosition() + move);
+            frontright.setTargetPosition(frontright.getCurrentPosition() + move);
+            backleft.setTargetPosition(backleft.getCurrentPosition() + move);
+            backright.setTargetPosition(backright.getCurrentPosition() + move);
             //
-            left.setPower(speed);
-            right.setPower(speed);
+            frontleft.setPower(speed);
+            frontright.setPower(speed);
+            backleft.setPower(speed);
+            backright.setPower(speed);
             //
-            while (left.isBusy() && right.isBusy()) {}
-            right.setPower(0);
-            left.setPower(0);
+            while (frontleft.isBusy() && frontright.isBusy() && backleft.isBusy() && backright.isBusy()) {}
+            frontleft.setPower(0);
+            frontright.setPower(0);
+            backleft.setPower(0);
+            backright.setPower(0);
         }else{
             int move1 = (int)(Math.round((inches - 5) * conversion));
-            int movel2 = left.getCurrentPosition() + (int)(Math.round(inches * conversion));
-            int mover2 = right.getCurrentPosition() + (int)(Math.round(inches * conversion));
+            int movefl2 = frontleft.getCurrentPosition() + (int)(Math.round(inches * conversion));
+            int movefr2 = frontright.getCurrentPosition() + (int)(Math.round(inches * conversion));
+            int movebl2 = backleft.getCurrentPosition() + (int)(Math.round(inches * conversion));
+            int movebr2 = backright.getCurrentPosition() + (int)(Math.round(inches * conversion));
             //
-            left.setTargetPosition(left.getCurrentPosition() + move1);
-            right.setTargetPosition(right.getCurrentPosition() + move1);
+            frontleft.setTargetPosition(frontleft.getCurrentPosition() + move1);
+            frontright.setTargetPosition(frontright.getCurrentPosition() + move1);
+            backleft.setTargetPosition(backleft.getCurrentPosition() + move1);
+            backright.setTargetPosition(backright.getCurrentPosition() + move1);
             //
-            left.setPower(speed);
-            right.setPower(speed);
+            frontleft.setPower(speed);
+            frontright.setPower(speed);
+            backleft.setPower(speed);
+            backright.setPower(speed);
             //
-            while (left.isBusy() && right.isBusy()) {}
+            while (frontleft.isBusy() && frontright.isBusy() && backleft.isBusy() && backright.isBusy()) {}
             //
-            left.setTargetPosition(movel2);
-            right.setTargetPosition(mover2);
+            frontleft.setTargetPosition(movefl2);
+            frontright.setTargetPosition(movefr2);
+            backleft.setTargetPosition(movebl2);
+            backright.setTargetPosition(movebr2);
             //
-            left.setPower(.1);
-            right.setPower(.1);
+            frontleft.setPower(.1);
+            frontright.setPower(.1);
+            backleft.setPower(.1);
+            backright.setPower(.1);
             //
-            while (left.isBusy() && right.isBusy()) {}
-            right.setPower(0);
-            left.setPower(0);
+            while (frontleft.isBusy() && frontright.isBusy() && backleft.isBusy() && backright.isBusy()) {}
+            frontleft.setPower(0);
+            frontright.setPower(0);
+            backleft.setPower(0);
+            backright.setPower(0);
         }
         return;
     }
@@ -193,11 +218,14 @@ public class EncoderTest extends LinearOpMode {
         }
         //</editor-fold>
         //
-        left.setPower(0);
-        right.setPower(0);
+        frontleft.setPower(0);
+        frontright.setPower(0);
+        backleft.setPower(0);
+        backright.setPower(0);
     }
     //
     /*
+    WARNING: This Movement type is INCOMPATIBLE with your chassis, use is NOT RECOMMENDED
     This is our function for arcing, a special type of movement that allows for turning while moving.
     Use the angle and length to determine where the robot will end up.
      */
@@ -221,28 +249,29 @@ public class EncoderTest extends LinearOpMode {
         telemetry.addData("right motor", rightMotor + ", " + rightd);
         telemetry.update();
         //
-        left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontleft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontright.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backleft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backright.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //
-        left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontleft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        frontright.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        backleft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backright.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         //
-        right.setTargetPosition(right.getCurrentPosition() + rightd);
-        left.setTargetPosition(left.getCurrentPosition() + leftd);
+        backright.setTargetPosition(backright.getCurrentPosition() + rightd);
+        backleft.setTargetPosition(backleft.getCurrentPosition() + leftd);
         //
-        left.setPower(speed);
-        right.setPower((rightMotor / leftMotor) * speed);
+        frontleft.setPower(0);
+        frontright.setPower(0);
+        backleft.setPower(speed);
+        backright.setPower((rightMotor / leftMotor) * speed);
         //
-        while (left.isBusy() || right.isBusy()){
-            if (exit){
-                right.setPower(0);
-                left.setPower(0);
-                return;
-            }
-        }
+        while (backleft.isBusy() && backright.isBusy()){}
         //
-        right.setPower(0);
-        left.setPower(0);
+        frontleft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontright.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backright.setPower(0);
         return;
     }
     //
@@ -297,11 +326,15 @@ public class EncoderTest extends LinearOpMode {
     encoder mode and begin turning.
      */
     public void turnWithEncoder(double input){
-        left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontleft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontright.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backleft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backright.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //
-        left.setPower(input);
-        right.setPower(-input);
+        frontleft.setPower(input);
+        frontright.setPower(-input);
+        backleft.setPower(input);
+        backright.setPower(-input);
     }
     //
 }

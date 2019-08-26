@@ -117,6 +117,8 @@ public class Moby extends OmniMode {
         //
         //<editor-fold desc="Variables">
         //
+        boolean fullpower = false;
+        //
         double c;
         double d;
         //
@@ -160,6 +162,13 @@ public class Moby extends OmniMode {
             right.setPower(-gamepad1.right_stick_y * rightPower * front);
             //
             //<editor-fold desc="Power Levels">
+            //
+            if (gamepad1.dpad_up){
+                fullpower = true;
+            }else if(gamepad1.dpad_down){
+                fullpower = false;
+            }
+            //
             if (gamepad1.right_trigger > 0) {
                 rightPower = .2;
                 telemetry.addData("Trigger", "Right");
@@ -170,7 +179,11 @@ public class Moby extends OmniMode {
                 if (isTurning(-gamepad1.left_stick_y, -gamepad1.right_stick_y)){
                     rightPower = 1.0;
                 }else {
-                    rightPower = .5;
+                    if(fullpower){
+                        rightPower = 1.0;
+                    }else {
+                        rightPower = .5;
+                    }
                 }
                 telemetry.addData("No action", "Right");
             }
@@ -185,7 +198,11 @@ public class Moby extends OmniMode {
                 if (isTurning(-gamepad1.left_stick_y, -gamepad1.right_stick_y)) {
                     leftPower = 1.0;
                 }else {
-                    leftPower = .5;
+                    if(fullpower){
+                        leftPower = 1.0;
+                    }else {
+                        leftPower = .5;
+                    }
                     telemetry.addData("No action", "Left");
                 }
             }
